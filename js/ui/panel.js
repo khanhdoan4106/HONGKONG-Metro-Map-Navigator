@@ -13,13 +13,14 @@ export function setStatus(text, variant = '') {
 export function renderUserBar(session, onLogout) {
   const bar = document.getElementById('user-bar');
   const isAdmin = session.role === ROLES.ADMIN;
+  const isGuest = session.role === ROLES.GUEST;
   bar.innerHTML = `
     <div class="user-info">
-      <span class="user-avatar ${isAdmin ? 'admin' : ''}">${escapeHtml(session.displayName.charAt(0).toUpperCase())}</span>
+      <span class="user-avatar ${isAdmin ? 'admin' : isGuest ? 'guest' : ''}">${escapeHtml(session.displayName.charAt(0).toUpperCase())}</span>
       <span class="user-name">${escapeHtml(session.displayName)}</span>
-      <span class="role-badge ${isAdmin ? 'admin' : 'user'}">${ROLE_LABELS[session.role]}</span>
+      <span class="role-badge ${isAdmin ? 'admin' : isGuest ? 'guest' : 'user'}">${ROLE_LABELS[session.role]}</span>
     </div>
-    <button class="logout-btn" type="button">Đăng xuất</button>`;
+    <button class="logout-btn" type="button">${isGuest ? 'Đăng nhập' : 'Đăng xuất'}</button>`;
   bar.querySelector('.logout-btn').addEventListener('click', onLogout);
 }
 

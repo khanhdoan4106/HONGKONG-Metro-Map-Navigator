@@ -306,6 +306,7 @@ Hoặc dùng extension **Live Server** của VS Code. Trình duyệt cần Inter
 | --- | --- | --- | --- |
 | `admin` | `admin123` | Quản trị viên | Chặn / bỏ chặn đoạn metro, gỡ tất cả, tìm đường |
 | `user` | `user123` | Người dùng | Xem các đoạn đang tạm dừng, tìm đường (A* tự tránh các đoạn đó) |
+| (nút "Vào với tư cách khách") | không cần | Khách | Như người dùng; phiên mất khi đóng tab |
 
 - Chưa đăng nhập mà vào `index.html` sẽ bị chuyển về `login.html`.
 - Tick "Ghi nhớ đăng nhập" để giữ phiên sau khi đóng trình duyệt (tối đa 12 giờ); không tick thì phiên mất khi đóng tab.

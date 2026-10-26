@@ -52,6 +52,8 @@ body.auth-pending { visibility: hidden; }
 }
 .role-badge.admin { background: rgba(0,111,189,0.12); color: var(--accent); }
 .role-badge.user  { background: rgba(25,135,84,0.12); color: var(--green); }
+.role-badge.guest { background: rgba(102,117,138,0.14); color: var(--muted); }
+.user-avatar.guest { background: #8794a5; }
 
 .logout-btn {
   background: none;

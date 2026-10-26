@@ -58,6 +58,19 @@ export async function login(username, password, { remember = false } = {}) {
   return session;
 }
 
+/** Vào chế độ khách: không cần tài khoản, chỉ lưu trong sessionStorage (mất khi đóng tab). */
+export function loginAsGuest() {
+  const session = {
+    username: 'guest',
+    displayName: 'Khách',
+    role: ROLES.GUEST,
+    loginAt: Date.now()
+  };
+  clearStorage();
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  return session;
+}
+
 export function logout() {
   clearStorage();
 }
@@ -67,10 +80,11 @@ export function getSession() {
   const session = readStorage(sessionStorage) || readStorage(localStorage);
   if (!session) return null;
 
-  // Chỉ chấp nhận phiên khớp với một tài khoản có thật và đúng vai trò của nó
-  const account = ACCOUNTS.find(item => item.username === session.username);
+  // Chỉ chấp nhận phiên khách hợp lệ, hoặc phiên khớp với một tài khoản có thật và đúng vai trò
   const expired = Date.now() - Number(session.loginAt || 0) > SESSION_TTL_MS;
-  if (!account || account.role !== session.role || expired) {
+  const isGuest = session.role === ROLES.GUEST && session.username === 'guest';
+  const account = ACCOUNTS.find(item => item.username === session.username);
+  if (expired || (!isGuest && (!account || account.role !== session.role))) {
     clearStorage();
     return null;
   }
