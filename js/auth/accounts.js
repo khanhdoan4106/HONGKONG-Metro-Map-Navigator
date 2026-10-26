@@ -11,12 +11,14 @@
 
 export const ROLES = Object.freeze({
   ADMIN: 'admin',
-  USER: 'user'
+  USER: 'user',
+  GUEST: 'guest'   // vào không cần đăng nhập, quyền như USER, phiên mất khi đóng tab
 });
 
 export const ROLE_LABELS = Object.freeze({
   [ROLES.ADMIN]: 'Quản trị viên',
-  [ROLES.USER]: 'Người dùng'
+  [ROLES.USER]: 'Người dùng',
+  [ROLES.GUEST]: 'Khách'
 });
 
 export const ACCOUNTS = Object.freeze([

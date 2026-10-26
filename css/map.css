@@ -164,9 +164,3 @@
 @keyframes routeFlow {
   100% { stroke-dashoffset: -27; } 
 }
-
-/* Lớp nền OSM lọc màu (không cần API key):
-   - Sáng: nhạt và giảm bão hoà để màu tuyến MTR nổi rõ
-   - Tối: đảo màu, xoay hue để nước vẫn xanh */
-.leaflet-tile-pane .tiles-light { filter: grayscale(0.85) brightness(1.08) contrast(0.88); }
-.leaflet-tile-pane .tiles-dark  { filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.4); }

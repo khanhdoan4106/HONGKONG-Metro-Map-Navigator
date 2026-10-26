@@ -246,7 +246,7 @@ Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đâ
 - JavaScript thuần (ES modules): dữ liệu đồ thị, trạng thái tương tác, A*, route rendering, gợi ý du lịch, đăng nhập và phân quyền.
 - Web Crypto API (SHA-256): băm mật khẩu khi đăng nhập.
 - Leaflet 1.9.4: thư viện bản đồ tương tác (ghim phiên bản để tránh vỡ khi Leaflet ra bản lớn mới).
-- OpenStreetMap: tile bản đồ nền (không cần API key). Kiểu "Sáng" và "Tối" là tile OSM lọc màu bằng CSS. Lớp CARTO chỉ bật khi điền key vào `CARTO_KEY` trong `js/map/map-setup.js`, vì CARTO hiện yêu cầu API key.
+- Bản đồ nền: CARTO Positron / Dark Matter / Voyager (API key miễn phí, giới hạn theo website, khai báo ở `CARTO_KEY` trong `js/map/map-setup.js`), kèm các lớp Esri và OpenStreetMap không cần key. Nếu lớp đang dùng không tải được tile, bản đồ tự chuyển sang lớp Esri.
 - Google Fonts: `Outfit` và `JetBrains Mono`.
 
 Dự án không dùng framework frontend hay bundler và không có thư viện phụ thuộc phải cài; `package.json` chỉ chứa lệnh chạy server tĩnh. Toàn bộ ứng dụng chạy từ các file tĩnh.
@@ -306,6 +306,7 @@ Hoặc dùng extension **Live Server** của VS Code. Trình duyệt cần Inter
 | --- | --- | --- | --- |
 | `admin` | `admin123` | Quản trị viên | Chặn / bỏ chặn đoạn metro, gỡ tất cả, tìm đường |
 | `user` | `user123` | Người dùng | Xem các đoạn đang tạm dừng, tìm đường (A* tự tránh các đoạn đó) |
+| (nút "Vào với tư cách khách") | không cần | Khách | Như người dùng; phiên mất khi đóng tab |
 
 - Chưa đăng nhập mà vào `index.html` sẽ bị chuyển về `login.html`.
 - Tick "Ghi nhớ đăng nhập" để giữ phiên sau khi đóng trình duyệt (tối đa 12 giờ); không tick thì phiên mất khi đóng tab.

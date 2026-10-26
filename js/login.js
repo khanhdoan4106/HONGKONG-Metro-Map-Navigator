@@ -1,6 +1,6 @@
 // Trang đăng nhập.
 
-import { login, getSession, APP_PAGE } from './auth/auth.js';
+import { login, loginAsGuest, getSession, APP_PAGE } from './auth/auth.js';
 import { getSignStops } from './core/sign-stops.js';
 import { createStationScene, webglAvailable } from './ui/station-scene.js';
 import { createRouteMapCard } from './ui/route-map-card.js';
@@ -114,6 +114,11 @@ password.addEventListener('keyup', event => {
 
 form.addEventListener('input', () => {
   if (!errorBox.hidden) showError('');
+});
+
+$('guest-btn').addEventListener('click', () => {
+  loginAsGuest();
+  location.replace(APP_PAGE);
 });
 
 form.addEventListener('submit', async event => {
