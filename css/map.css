@@ -3,7 +3,6 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  filter: brightness(0.97) saturate(0.88);
 }
 
 .map-frame {
@@ -49,83 +48,33 @@
 .corner.bottom-left { bottom:-1px; left:-1px; border-width:0 0 3px 3px; }
 .corner.bottom-right { bottom:-1px; right:-1px; border-width:0 3px 3px 0; }
 
-#line-legend {
-  position: absolute;
-  left: 18px;
-  top: 18px;
-  z-index: 920;
-  width: max-content; 
-  background: rgba(255, 255, 255, 0.93);
-  border: 1px solid rgba(214, 221, 229, 0.92);
-  border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.16);
-  backdrop-filter: blur(12px);
-  padding: 10px 12px; 
-}
-
-.legend-title {
-  color: var(--text);
-  font-size: 11px;
-  font-family: var(--mono);
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05); 
-  padding-bottom: 4px;
-}
-
-.legend-grid {
-  display: flex;
-  flex-direction: column; 
-  gap: 8px;
-}
-
-.legend-grid span {
-  display: flex;
-  align-items: center;
-  gap: 6px; 
-  color: var(--muted);
-  font-family: var(--font); 
-  font-size: 11.5px; 
-}
-
-.legend-grid i {
-  width: 14px;
-  height: 6px; 
-  display: inline-block;
-  border-radius: 999px;
-  background: var(--line);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
-  flex-shrink: 0; 
-}
-
 .leaflet-tooltip {
-  background:var(--panel2) !important;
-  border:1px solid var(--border) !important;
-  color:var(--text) !important;
-  font-family:var(--mono) !important;
-  font-size:11.5px !important;
-  border-radius:7px !important;
-  padding:5px 10px !important;
-  box-shadow:0 6px 16px rgba(16,24,40,0.18) !important;
+  background: var(--paper) !important;
+  border: 1px solid var(--rule) !important;
+  color: var(--ink) !important;
+  font-family: var(--font) !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: 7px !important;
+  padding: 5px 10px !important;
+  box-shadow: 0 6px 16px rgba(28,37,48,0.18) !important;
 }
-.leaflet-tooltip-top::before { border-top-color:var(--border) !important; }
+.leaflet-tooltip span { font-weight: 400; color: var(--muted); }
+.leaflet-tooltip-top::before { border-top-color: var(--rule) !important; }
 
+/* Ga theo quy ước bản đồ MTR: vòng tròn trắng viền mực; ga đổi tuyến to và viền dày hơn */
 .station-dot {
-  width:9px;
-  height:9px;
-  background:#dbe9f7;
-  border:2px solid #ffffff;
-  border-radius:50%;
-  box-shadow:0 0 7px rgba(77,156,255,0.75);
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
 }
-
 .station-dot.interchange {
-  width:12px;
-  height:12px;
-  background:#fff;
-  border:3px solid #f0a500;
-  box-shadow:0 0 9px rgba(240,165,0,0.8);
+  width: 14px;
+  height: 14px;
+  border-width: 3px;
 }
 
 .leaflet-control-layers {
@@ -153,7 +102,6 @@
 
 #map.has-active-route .station-dot {
   opacity: 0.3;
-  box-shadow: none;
   transition: opacity 0.5s ease;
 }
 
@@ -164,3 +112,4 @@
 @keyframes routeFlow {
   100% { stroke-dashoffset: -27; } 
 }
+.leaflet-tooltip .tip-blocked { color: var(--stop); }

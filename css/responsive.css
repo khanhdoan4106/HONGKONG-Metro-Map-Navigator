@@ -1,38 +1,8 @@
-/* Responsive + giảm chuyển động (load cuối cùng) */
+/* Responsive cho mascot + giảm chuyển động (load cuối cùng).
+   Bố cục panel trên màn hẹp nằm trong panel.css */
 @media (max-width: 720px) {
   .map-frame {
     inset:6px;
-  }
-
-  #line-legend {
-    display:none;
-  }
-
-  #panel {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    width: auto;
-    max-height: calc(100vh - 20px);
-  }
-
-  .route-flow {
-    max-height: 260px;
-  }
-
-  .tour-mode-grid,
-  .route-option-list {
-    grid-template-columns:1fr;
-  }
-
-  .idea-card-top {
-    align-items:flex-start;
-    flex-direction:column;
-    gap:5px;
-  }
-
-  .idea-station {
-    white-space:normal;
   }
 
   #tour-guide {
@@ -80,7 +50,8 @@
   .sparkle,
   .emotion-fx span,
   .mood-badge,
-  .dot {
+  .dot,
+  .active-route-core {
     animation:none;
   }
 }

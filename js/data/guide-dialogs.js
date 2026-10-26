@@ -34,7 +34,7 @@ export const defaultGuideTips = {
   admin: [
     {
       left: 'Chào admin! Bấm vào đoạn metro để chặn tuyến khi có sự cố, hành khách sẽ thấy ngay.',
-      right: 'Chặn xong nhớ bấm Xác nhận rồi thử tìm đường để kiểm tra tuyến thay thế nhé.',
+      right: 'Chặn xong thì chuyển sang tab Tìm đường để kiểm tra tuyến thay thế nhé.',
       leftMood: 'happy',
       rightMood: 'idea'
     },
