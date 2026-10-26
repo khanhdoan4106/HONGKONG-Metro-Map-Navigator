@@ -7,18 +7,19 @@ import { escapeHtml } from '../core/utils.js';
 export function setStatus(text, variant = '') {
   const badge = document.getElementById('status-badge');
   badge.className = variant;
-  badge.innerHTML = `<span class="dot"></span><span>${escapeHtml(text)}</span>`;
+  badge.innerHTML = `<span>${escapeHtml(text)}</span>`;
 }
 
 export function renderUserBar(session, onLogout) {
   const bar = document.getElementById('user-bar');
   const isAdmin = session.role === ROLES.ADMIN;
   const isGuest = session.role === ROLES.GUEST;
+  const roleLabel = ROLE_LABELS[session.role];
   bar.innerHTML = `
     <div class="user-info">
       <span class="user-avatar ${isAdmin ? 'admin' : isGuest ? 'guest' : ''}">${escapeHtml(session.displayName.charAt(0).toUpperCase())}</span>
       <span class="user-name">${escapeHtml(session.displayName)}</span>
-      <span class="role-badge ${isAdmin ? 'admin' : isGuest ? 'guest' : 'user'}">${ROLE_LABELS[session.role]}</span>
+      ${roleLabel === session.displayName ? '' : `<span class="role-badge">${roleLabel}</span>`}
     </div>
     <button class="logout-btn" type="button">${isGuest ? 'Đăng nhập' : 'Đăng xuất'}</button>`;
   bar.querySelector('.logout-btn').addEventListener('click', onLogout);
@@ -57,18 +58,16 @@ export function renderBlockedPanel({ keys, meta, canEdit }) {
     const u = stationById.get(edge.u);
     const v = stationById.get(edge.v);
     const info = meta(key);
-    const since = info?.at ? `<div class="blocked-meta">Từ ${formatTime(info.at)}</div>` : '';
+    const since = info?.at ? `<div class="blocked-meta">Chặn lúc ${formatTime(info.at)}</div>` : '';
     const action = canEdit
-      ? `<button class="unblock-btn" type="button" data-unblock="${edge.key}">Bỏ cấm</button>`
+      ? `<button class="unblock-btn" type="button" data-unblock="${edge.key}" aria-label="Mở lại đoạn ${escapeHtml(u.name)} – ${escapeHtml(v.name)}">Mở lại</button>`
       : '<span class="blocked-tag">Tạm dừng</span>';
 
     return `
       <div class="blocked-line-item">
         <div>
           <div class="blocked-line-names">
-            <span class="stn-tag">${u.name}</span>
-            <span class="line-arrow">⟷</span>
-            <span class="stn-tag">${v.name}</span>
+            ${escapeHtml(u.name)}<span class="line-arrow">–</span>${escapeHtml(v.name)}
           </div>
           ${since}
         </div>

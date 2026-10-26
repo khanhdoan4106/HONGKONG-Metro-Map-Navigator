@@ -247,7 +247,7 @@ Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đâ
 - Web Crypto API (SHA-256): băm mật khẩu khi đăng nhập.
 - Leaflet 1.9.4: thư viện bản đồ tương tác (ghim phiên bản để tránh vỡ khi Leaflet ra bản lớn mới).
 - Bản đồ nền: CARTO Positron / Dark Matter / Voyager (API key miễn phí, giới hạn theo website, khai báo ở `CARTO_KEY` trong `js/map/map-setup.js`), kèm các lớp Esri và OpenStreetMap không cần key. Nếu lớp đang dùng không tải được tile, bản đồ tự chuyển sang lớp Esri.
-- Google Fonts: `Outfit` và `JetBrains Mono`.
+- Google Fonts: `Be Vietnam Pro` (cả hai trang); trang đăng nhập thêm `Chakra Petch` và `Noto Sans TC` cho biển tên ga.
 
 Dự án không dùng framework frontend hay bundler và không có thư viện phụ thuộc phải cài; `package.json` chỉ chứa lệnh chạy server tĩnh. Toàn bộ ứng dụng chạy từ các file tĩnh.
 
@@ -264,8 +264,9 @@ HONGKONG-Metro-Map-Navigator/
 │   ├── base.css               # Reset, biến màu, font
 │   ├── map.css                # Bản đồ, khung, legend, marker ga, lớp tuyến
 │   ├── guide.css              # Hai mascot và animation
-│   ├── panel.css              # Panel điều khiển, kết quả tuyến
-│   ├── auth.css               # Trang đăng nhập, thanh tài khoản, UI theo vai trò
+│   ├── panel.css              # Thanh bên: vé Từ/Đến, strip map tuyến, đoạn bị chặn, bố cục mobile
+│   ├── auth.css               # Ẩn trang khi chưa đăng nhập, nhãn điểm đi/đến
+│   ├── login.css              # Trang đăng nhập
 │   └── responsive.css         # Media query (load cuối)
 ├── js/
 │   ├── main.js                # Điểm vào trang bản đồ: nối các module, xử lý luồng thao tác
@@ -320,8 +321,8 @@ Hoặc dùng extension **Live Server** của VS Code. Trình duyệt cần Inter
 
 1. Đăng nhập bằng tài khoản admin.
 2. Click vào một hoặc nhiều đoạn nối giữa các ga để chặn (click lần nữa để bỏ chặn).
-3. Xem danh sách "Đoạn bị cấm" kèm thời điểm chặn; nhấn "Bỏ cấm" hoặc "Gỡ tất cả" khi cần.
-4. Nhấn "Xác nhận" để chuyển sang bước chọn điểm và kiểm tra tuyến thay thế.
+3. Xem danh sách "Đoạn bị chặn" kèm thời điểm chặn; nhấn "Mở lại" hoặc "Mở tất cả" khi cần.
+4. Chuyển sang tab "Tìm đường" để chọn điểm và kiểm tra tuyến thay thế.
 
 **Người dùng**
 

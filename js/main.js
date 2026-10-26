@@ -49,11 +49,11 @@ function startApp(session) {
     logout();
     location.replace(LOGIN_PAGE);
   });
-  $('blocked-section-label').textContent = admin ? 'Đoạn bị cấm' : 'Đoạn tạm dừng';
+  $('blocked-section-label').textContent = admin ? 'Đoạn bị chặn' : 'Đoạn tạm dừng';
   $('blocked-empty-msg').textContent = admin
-    ? 'Chưa có đoạn nào bị cấm — bấm vào đoạn metro trên bản đồ để chặn'
-    : 'Toàn bộ mạng đang hoạt động bình thường';
-  $('confirm-btn').hidden = !admin;
+    ? 'Chưa có đoạn nào bị chặn.'
+    : 'Toàn bộ mạng đang chạy bình thường.';
+  $('task-switch').hidden = !admin;
 
   // ---------------------------------------------------------------- helpers
   function stationNear(latlng) {
@@ -66,20 +66,20 @@ function startApp(session) {
     if (mode === 'block') {
       setStatus(
         count > 0
-          ? `${count} đoạn bị cấm — nhấn Xác nhận để chọn điểm đi/đến`
-          : `${stations.length} ga · ${railEdgeCount} đoạn metro — bấm vào đoạn để chặn`,
+          ? `Đang chặn ${count} đoạn. Chuyển sang Tìm đường để thử tuyến đi vòng.`
+          : `Mạng có ${stations.length} ga và ${railEdgeCount} đoạn metro.`,
         count > 0 ? 'danger' : ''
       );
       setGuideTip(count > 0
         ? {
             left: `Đã khóa ${count} đoạn rồi. Hành khách sẽ thấy các đoạn này bị tạm dừng.`,
-            right: 'Bấm Xác nhận rồi thử tìm đường để kiểm tra tuyến thay thế nhé. Đừng khóa quá tay.',
+            right: 'Chuyển sang tab Tìm đường để kiểm tra tuyến thay thế nhé. Đừng khóa quá tay.',
             leftMood: 'angry',
             rightMood: 'pout'
           }
         : {
             left: 'Bấm vào đoạn metro để giả lập sự cố. Hành khách sẽ được tự động đi vòng.',
-            right: 'Nếu không cần chặn đoạn nào thì bấm Xác nhận để thử tìm đường.',
+            right: 'Không cần chặn đoạn nào thì chuyển sang tab Tìm đường luôn.',
             leftMood: 'happy',
             rightMood: 'idea'
           });
@@ -87,8 +87,10 @@ function startApp(session) {
     }
 
     if (mode === 'start') {
-      const note = count > 0 ? ` (${count} đoạn đang tạm dừng)` : '';
-      setStatus(`Chọn điểm bắt đầu trên bản đồ${note}`, count > 0 ? 'danger' : '');
+      setStatus(
+        count > 0 ? `${count} đoạn đang tạm dừng, tuyến sẽ tự đi vòng.` : 'Bấm vào bản đồ để chọn điểm đi.',
+        count > 0 ? 'danger' : ''
+      );
     }
   }
 
@@ -105,7 +107,7 @@ function startApp(session) {
       button.classList.toggle('active', selected);
       button.setAttribute('aria-pressed', String(selected));
     });
-    $('active-mode-note').textContent = getRouteMode(activeRouteMode).label;
+    $('active-mode-note').textContent = getRouteMode(activeRouteMode).description;
   }
 
   // ---------------------------------------------------------------- route
@@ -128,7 +130,7 @@ function startApp(session) {
       const which = !sourceId && !targetId ? 'Cả hai điểm' : !sourceId ? 'Điểm xuất phát' : 'Điểm đến';
       showNoRoute(
         `${which} nằm ngoài phạm vi mạng MTR Hong Kong`,
-        'Điểm bắt đầu hoặc điểm kết thúc nằm ngoài lãnh thổ Hong Kong. Vui lòng chọn lại trong phạm vi mạng MTR.',
+        'Điểm này nằm ngoài Hong Kong nên không có ga MTR gần. Bấm bản đồ để chọn lại điểm đi trong Hong Kong.',
         {
           left: 'Ủa bạn đi đâu vậy? Chỗ đó tớ không phủ sóng được rồi!',
           right: 'MTR chỉ chạy trong Hong Kong thôi nha. Bấm lại vào đúng vị trí trong bản đồ nhé.',
@@ -144,12 +146,14 @@ function startApp(session) {
 
     if (!result) {
       showNoRoute(
-        'Không tìm được đường đi với các đoạn đang bị cấm',
-        'Không còn tuyến hợp lệ giữa hai điểm đã chọn.',
+        'Không có tuyến nào tránh được các đoạn đang tạm dừng',
+        admin
+          ? 'Hai ga này bị tách rời vì các đoạn đang chặn. Mở lại một đoạn ở danh sách bên dưới, tuyến sẽ được tính lại.'
+          : 'Hai ga này bị tách rời vì các đoạn đang tạm dừng. Thử chọn một điểm đến khác.',
         {
           left: 'Không ổn rồi, tuyến bị chia cắt. Tớ tức vì không dẫn bạn đi ăn được.',
           right: admin
-            ? 'Bình tĩnh. Bỏ cấm vài đoạn hoặc chọn cặp ga gần hơn là tớ tính lại ngay.'
+            ? 'Bình tĩnh. Mở lại vài đoạn hoặc chọn cặp ga gần hơn là tớ tính lại ngay.'
             : 'Một số đoạn đang tạm dừng. Thử chọn điểm khác hoặc quay lại sau nhé.',
           leftMood: 'angry',
           rightMood: 'pout'
@@ -164,7 +168,7 @@ function startApp(session) {
 
     const source = stationById.get(sourceId);
     const target = stationById.get(targetId);
-    setStatus(`Đã tính tuyến ${source.name} → ${target.name} theo ${result.modeShortLabel}`, 'success');
+    setStatus(`Tuyến ${result.modeShortLabel.toLowerCase()} từ ${source.name} đến ${target.name}. Bấm bản đồ để chọn lại điểm đi.`, 'success');
   }
 
   function setTourMode(modeKey) {
@@ -212,7 +216,7 @@ function startApp(session) {
       $('route-section').style.display = 'none';
       markerStart = pointMarker(map, event.latlng, 'start');
       setMode('end');
-      setStatus('Chọn điểm kết thúc trên bản đồ');
+      setStatus('Bấm vào bản đồ để chọn điểm đến.');
       setGuideTip({
         left: 'Tốt, đã có điểm đi. Giờ chọn điểm đến, tớ sẽ săn điểm ăn chơi dọc tuyến.',
         right: 'Tớ sẽ đối chiếu với thời gian và số lần đổi tuyến. Chọn điểm đến đi.',
@@ -249,24 +253,44 @@ function startApp(session) {
     requestAnimationFrame(() => map.invalidateSize());
   }
 
-  // Thanh bước: admin có thêm bước "Chặn đoạn", hành khách bắt đầu từ "Điểm đi"
-  const stepOrder = admin ? ['block', 'start', 'end', 'done'] : ['start', 'end', 'done'];
-  function renderSteps() {
-    const current = stepOrder.indexOf(mode);
-    document.querySelectorAll('#steps [data-step]').forEach(li => {
-      const index = stepOrder.indexOf(li.dataset.step);
-      li.hidden = index === -1;
-      li.querySelector('.step-num').textContent = index + 1;
-      li.classList.toggle('is-done', index !== -1 && index < current);
-      li.classList.toggle('is-current', index === current);
-      if (index === current) li.setAttribute('aria-current', 'step');
-      else li.removeAttribute('aria-current');
+  // Vé hành trình (thay cho thanh bước): ô Từ / Đến hiện ga gần nhất với điểm đã bấm,
+  // ô đang chờ người dùng bấm bản đồ được tô đậm.
+  function slotText(marker, prompt) {
+    if (!marker) return { text: prompt, empty: true };
+    const id = stationNear(marker.getLatLng());
+    return id
+      ? { text: `Ga ${stationById.get(id).name}`, empty: false }
+      : { text: 'Ngoài Hong Kong', empty: false };
+  }
+
+  function renderTrip() {
+    const blocking = mode === 'block';
+    $('trip').hidden = blocking;
+    $('mode-section').hidden = blocking;
+    $('block-intro').hidden = !blocking;
+
+    document.querySelectorAll('#task-switch [data-task]').forEach(button => {
+      const selected = (button.dataset.task === 'block') === blocking;
+      button.setAttribute('aria-pressed', String(selected));
+    });
+
+    const slots = {
+      start: slotText(markerStart, 'Bấm bản đồ để chọn'),
+      end: slotText(markerEnd, mode === 'end' ? 'Bấm bản đồ để chọn' : 'Chọn sau điểm đi')
+    };
+    Object.entries(slots).forEach(([key, { text, empty }]) => {
+      const value = $(`slot-${key}`);
+      value.textContent = text;
+      value.classList.toggle('is-empty', empty);
+      const slot = value.closest('.trip-slot');
+      slot.classList.toggle('is-current', mode === key);
+      slot.classList.toggle('is-set', !empty);
     });
   }
 
   function setMode(next) {
     mode = next;
-    renderSteps();
+    renderTrip();
   }
 
   // ---------------------------------------------------------------- events
@@ -288,7 +312,7 @@ function startApp(session) {
   clearBtn.addEventListener('click', () => {
     if (!admin) return;
     if (!clearArmedTimer) {
-      clearBtn.textContent = 'Bấm lần nữa để gỡ';
+      clearBtn.textContent = 'Bấm lần nữa để mở tất cả';
       clearBtn.classList.add('armed');
       clearArmedTimer = setTimeout(disarmClear, 3000);
       return;
@@ -299,10 +323,15 @@ function startApp(session) {
   function disarmClear() {
     clearTimeout(clearArmedTimer);
     clearArmedTimer = null;
-    clearBtn.textContent = 'Gỡ tất cả';
+    clearBtn.textContent = 'Mở tất cả';
     clearBtn.classList.remove('armed');
   }
-  $('confirm-btn').addEventListener('click', () => admin && enterStartMode());
+  $('task-switch').addEventListener('click', event => {
+    const button = event.target.closest('[data-task]');
+    if (!button || !admin) return;
+    if (button.dataset.task === 'route' && mode === 'block') enterStartMode();
+    if (button.dataset.task === 'block' && mode !== 'block') resetMap();
+  });
   $('zoom-in-btn').addEventListener('click', () => { scale = Math.min(scale + 0.1, 1.5); applyZoom(); });
   $('zoom-out-btn').addEventListener('click', () => { scale = Math.max(scale - 0.1, 0.6); applyZoom(); });
   $('reset-btn').addEventListener('click', resetMap);
@@ -310,7 +339,7 @@ function startApp(session) {
   blockedStore.subscribe(refreshBlocked);
 
   // ---------------------------------------------------------------- boot
-  renderSteps();
+  renderTrip();
   initGuide(session.role);
   renderTourModeButtons();
   renderBlockedPanel({ keys: blockedStore.keys(), meta: key => blockedStore.meta(key), canEdit: admin });

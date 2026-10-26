@@ -16,7 +16,7 @@ export function drawStations(map) {
         iconAnchor: [7, 7]
       })
     }).addTo(map).bindTooltip(
-      `${station.name}<br><span>${station.lines.join(' · ')}</span>`,
+      `${station.name}<br><span>${station.lines.join(', ')}</span>`,
       { permanent: false, direction: 'top' }
     );
   });
@@ -52,7 +52,7 @@ export function createNetworkLayer(map, { blocked, canEdit, onEdgeClick }) {
       const clickable = editable && !edge.isTransfer;
 
       const line = L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
-        color: isBlocked ? '#ff5252' : lineColor(primaryLine),
+        color: isBlocked ? '#c8102e' : lineColor(primaryLine),
         ...styleFor(edge, isBlocked, baseWeight),
         dashArray: edge.isTransfer ? '4,8' : isBlocked ? '9,7' : null,
         className: `base-edge${clickable ? ' editable-edge' : ''}`
@@ -72,9 +72,9 @@ export function createNetworkLayer(map, { blocked, canEdit, onEdgeClick }) {
       }
 
       const minTime = Math.min(...edge.lines.map(code => edge.timeByLine[code]));
-      const stateText = isBlocked ? (editable ? ' · Đang cấm (bấm để bỏ)' : ' · Tạm dừng khai thác') : '';
+      const stateText = isBlocked ? (editable ? 'Đang chặn, bấm để mở lại' : 'Tạm dừng khai thác') : '';
       line.bindTooltip(
-        `${a.name} ↔ ${b.name}<br>${edge.lines.map(lineLabel).join(' / ')} · ${formatMinutes(minTime)}${stateText}`,
+        `${a.name} – ${b.name}<br><span>${edge.lines.map(lineLabel).join(', ')}, ${formatMinutes(minTime)}</span>${stateText ? `<br><strong class="tip-blocked">${stateText}</strong>` : ''}`,
         { sticky: true }
       );
 

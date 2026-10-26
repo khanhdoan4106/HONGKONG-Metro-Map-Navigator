@@ -6,17 +6,17 @@ import { stationById, lineColor } from '../core/graph.js';
 const WALK_SPEED_KMH = 5;
 
 export function pointMarker(map, latlng, kind) {
-  const config = kind === 'start'
-    ? { label: '▶ Bắt đầu', color: '#36c95a' }
-    : { label: '■ Kết thúc', color: '#ff5252' };
+  const label = kind === 'start' ? 'Điểm đi' : 'Điểm đến';
 
+  // Bọc ngoài cố định 0×0 tại điểm bấm; nhãn dịch lên trên để mũi nhọn chạm đúng điểm
   return L.marker(latlng, {
     icon: L.divIcon({
-      className: '',
-      html: `<div class="point-marker" style="background:${config.color}">${config.label}</div>`,
-      iconSize: null, // để khung tự co theo nội dung (mặc định 12×12 làm chữ tràn ra ngoài)
-      iconAnchor: [30, 12]
-    })
+      className: 'point-marker-anchor',
+      html: `<div class="point-marker ${kind}">${label}</div>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    }),
+    keyboard: false
   }).addTo(map);
 }
 
@@ -37,7 +37,7 @@ export function createRouteLayer(map) {
 
   function walkLine(from, to, tooltip) {
     const line = L.polyline([from, to], {
-      color: '#8da2b5',
+      color: '#5d6876',
       weight: 5,
       dashArray: '6, 8',
       lineCap: 'round',
@@ -56,9 +56,9 @@ export function createRouteLayer(map) {
     const endStn = stationById.get(result.route[result.route.length - 1]);
 
     walkLine(startLatLng, [startStn.lat, startStn.lng],
-      `🚶 Đi bộ tới ga ${startStn.name} · ~${walkMinutes(startLatLng, startStn)} phút`);
+      `Đi bộ tới ga ${startStn.name}, khoảng ${walkMinutes(startLatLng, startStn)} phút`);
     walkLine([endStn.lat, endStn.lng], endLatLng,
-      `🚶 Đi bộ từ ga ${endStn.name} · ~${walkMinutes(endLatLng, endStn)} phút`);
+      `Đi bộ từ ga ${endStn.name}, khoảng ${walkMinutes(endLatLng, endStn)} phút`);
 
     result.legs.forEach(leg => {
       const a = stationById.get(leg.from);

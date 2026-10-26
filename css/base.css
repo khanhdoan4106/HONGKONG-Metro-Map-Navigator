@@ -1,28 +1,48 @@
-/* Reset, biến màu và nền trang */
+/* Reset, token màu / chữ dùng chung cho trang bản đồ.
+   Bảng màu lấy từ biển chỉ dẫn MTR: mực đậm trên nền trắng, màu nổi bật duy nhất
+   là màu của từng tuyến (mang thông tin), đỏ dành riêng cho đoạn tạm dừng / lỗi. */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #e9eef3;
-  --panel:   rgba(255,255,255,0.96);
-  --panel2:  #ffffff;
-  --panel3:  #eef3f7;
-  --border:  #d6dde5;
-  --accent:  #006fbd;
-  --green:   #198754;
-  --danger:  #d64545;
-  --warn:    #b7791f;
-  --text:    #17202a;
-  --muted:   #66758a;
-  --font:    'Outfit', sans-serif;
-  --mono:    'JetBrains Mono', monospace;
-  --r:       12px;
-  --shadow:  0 18px 48px rgba(16,24,40,0.22), 0 3px 12px rgba(16,24,40,0.12);
+  --ink:       #1c2530;   /* chữ chính, nút chính */
+  --paper:     #ffffff;   /* nền panel */
+  --concourse: #eef1f4;   /* nền phụ, ô vé */
+  --rule:      #d9dee4;   /* đường kẻ */
+  --muted:     #5d6876;   /* chữ phụ (tương phản 5.6:1 trên trắng) */
+  --stop:      #c8102e;   /* đoạn tạm dừng, lỗi */
+  --go:        #1a7f4b;   /* tính tuyến xong */
+
+  --font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r: 10px;
+
+  /* Tên cũ, giữ để guide.css (mascot) không phải sửa */
+  --bg:     var(--concourse);
+  --panel:  var(--paper);
+  --panel2: var(--paper);
+  --panel3: var(--concourse);
+  --border: var(--rule);
+  --text:   var(--ink);
+  --accent: var(--ink);
+  --danger: var(--stop);
+  --green:  var(--go);
+  --warn:   #a15c07;
+  --mono:   var(--font);
+  --shadow: 0 12px 32px rgba(28, 37, 48, 0.16);
 }
 
 body {
   font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
+  font-feature-settings: 'tnum' 1;   /* số phút thẳng cột */
+  background: var(--concourse);
+  color: var(--ink);
   height: 100vh;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
