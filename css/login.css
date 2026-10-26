@@ -489,55 +489,69 @@ body {
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 .field input:focus-visible { outline: none; }
 
-/* ----- Chế độ khách ----- */
+/* ----- Chế độ khách: nút phụ cùng cỡ với nút Đăng nhập ----- */
 .or {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 22px 0 16px;
-  font-size: 13px;
-  color: var(--muted);
+  gap: 14px;
+  margin: 22px 0 18px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #7f93a8;
 }
-.or::before, .or::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+.or::before, .or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14));
+}
+.or::after { background: linear-gradient(90deg, rgba(255,255,255,0.14), transparent); }
 
-.guest {
+.guest-btn {
   width: 100%;
+  height: 50px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
-  text-align: left;
-  font: inherit;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--tech);
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--text);
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.16);
   border-radius: 12px;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
-.guest:hover { border-color: var(--cyan); background: rgba(95,212,255,0.06); }
-
-.guest-icon {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: rgba(95,212,255,0.1);
+.guest-btn:hover {
+  color: #fff;
+  border-color: rgba(95,212,255,0.6);
+  background: rgba(95,212,255,0.08);
 }
-.guest-icon svg {
-  width: 20px;
-  height: 20px;
+.guest-btn:active { transform: translateY(1px); }
+.guest-btn svg {
+  width: 18px;
+  height: 18px;
   fill: none;
-  stroke: var(--cyan);
-  stroke-width: 1.8;
+  stroke: currentColor;
+  stroke-width: 1.9;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
+.guest-icon { color: var(--cyan); }
+.guest-arrow { opacity: 0.6; transition: transform 0.15s, opacity 0.15s; }
+.guest-btn:hover .guest-arrow { transform: translateX(3px); opacity: 1; }
 
-.guest-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.guest-text strong { font-size: 14.5px; font-weight: 600; }
-.guest-text small { font-size: 12.5px; color: var(--muted); }
+.guest-note {
+  margin-top: 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+  text-wrap: balance;
+}
 
 .roles {
   margin-top: 24px;
