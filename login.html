@@ -6,89 +6,83 @@
   <title>Đăng nhập · MTR Navigator</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css"/>
-  <link rel="stylesheet" href="css/panel.css"/>
-  <link rel="stylesheet" href="css/auth.css"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/login.css"/>
 </head>
-<body class="login-page">
+<body>
 
-<div class="login-shell">
+<!-- Bó 10 tuyến MTR chạy song song, bẻ góc 45° như sơ đồ metro (vẽ bằng js/login.js) -->
+<svg id="line-bundle" class="line-bundle" aria-hidden="true" preserveAspectRatio="xMidYMid slice"></svg>
 
-  <!-- Sơ đồ mạng MTR vẽ từ dữ liệu ga/tuyến thật -->
-  <section class="login-hero" aria-hidden="true">
-    <div class="hero-brand">
-      <div class="logo">MTR</div>
-      <div class="hero-brand-text">
-        <strong>MTR Navigator</strong>
-        <span>Hong Kong Network</span>
-      </div>
-    </div>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="MTR Navigator">
+    <span class="brand-mark">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 22V10l10 8 10-8v12"/></svg>
+    </span>
+    <span class="brand-name">MTR Navigator</span>
+  </a>
+  <span class="topbar-meta" id="network-meta">Hong Kong MTR</span>
+</header>
 
-    <div class="hero-map"><canvas id="network-canvas"></canvas></div>
+<main class="auth">
+  <section class="card" aria-labelledby="login-title">
+    <div class="card-strip" id="card-strip" aria-hidden="true"></div>
+    <div class="card-body">
+      <h1 id="login-title">Đăng nhập vào tài khoản</h1>
+      <p class="lead">Mở bản đồ và tìm đường trên mạng tàu điện MTR.</p>
 
-    <div class="hero-copy">
-      <h2>Tìm đường qua mạng tàu điện Hong Kong, kể cả khi có đoạn tạm dừng</h2>
-      <p>Thuật toán A* tính tuyến theo thời gian, số lần đổi tuyến và các điểm ăn chơi dọc đường.</p>
-      <div class="hero-stats">
-        <div class="hero-stat"><strong id="stat-stations">97</strong><span>Ga</span></div>
-        <div class="hero-stat"><strong id="stat-lines">10</strong><span>Tuyến</span></div>
-        <div class="hero-stat"><strong id="stat-edges">104</strong><span>Đoạn metro</span></div>
-      </div>
-      <div class="line-strip" id="line-strip"></div>
-    </div>
-  </section>
-
-  <main class="login-panel">
-    <div class="login-box">
-      <div class="login-head">
-        <h1>Đăng nhập</h1>
-        <p>Chào mừng trở lại. Nhập tài khoản để mở bản đồ.</p>
-      </div>
-
-      <form id="login-form" class="login-form" novalidate>
+      <form id="login-form" class="form" novalidate>
         <div class="field" id="field-username">
           <label for="username">Tên đăng nhập</label>
-          <div class="input-wrap">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></svg>
-            <input id="username" name="username" type="text" autocomplete="username" placeholder="Nhập tên đăng nhập" required autofocus>
-          </div>
+          <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
         </div>
 
         <div class="field" id="field-password">
-          <label for="password">Mật khẩu</label>
-          <div class="input-wrap has-toggle">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
-            <button id="toggle-password" class="toggle-password" type="button" aria-controls="password" aria-pressed="false">Hiện</button>
+          <div class="label-row">
+            <label for="password">Mật khẩu</label>
+            <span id="caps-hint" class="caps-hint" hidden>Caps Lock đang bật</span>
           </div>
-          <span id="caps-hint" class="caps-hint" hidden>Caps Lock đang bật</span>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <button id="toggle-password" class="toggle-password" type="button" aria-controls="password" aria-pressed="false" aria-label="Hiện mật khẩu">
+              <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+            </button>
+          </div>
         </div>
 
-        <label class="remember-row">
+        <label class="check">
           <input id="remember" type="checkbox">
-          Ghi nhớ đăng nhập trên máy này
+          <span>Ghi nhớ đăng nhập trên máy này</span>
         </label>
 
-        <div id="login-error" class="login-error" role="alert" hidden></div>
+        <div id="login-error" class="alert" role="alert" hidden></div>
 
-        <button id="login-submit" class="btn primary login-submit" type="submit">Đăng nhập</button>
+        <button id="login-submit" class="submit" type="submit">
+          <span class="submit-label">Tiếp tục</span>
+          <svg class="submit-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
       </form>
+    </div>
 
-      <div class="role-info-title">Quyền theo tài khoản</div>
-      <div class="role-info">
-        <div class="role-card">
-          <span class="role-badge admin">Quản trị viên</span>
-          <p>Chặn và mở lại đoạn metro khi có sự cố.</p>
-        </div>
-        <div class="role-card">
-          <span class="role-badge user">Người dùng</span>
-          <p>Tìm đường, tự tránh các đoạn đang tạm dừng.</p>
-        </div>
+    <div class="card-foot">
+      <div class="role">
+        <span class="role-dot admin"></span>
+        <p><strong>Quản trị viên</strong> chặn và mở lại đoạn metro khi có sự cố.</p>
+      </div>
+      <div class="role">
+        <span class="role-dot user"></span>
+        <p><strong>Người dùng</strong> tìm đường, tự tránh các đoạn đang tạm dừng.</p>
       </div>
     </div>
-  </main>
-</div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>Dữ liệu ga: MTR Open Data · Wikidata</span>
+  <span>Thuật toán A* có trọng số</span>
+</footer>
 
 <div id="file-protocol-warning" class="file-protocol-warning" hidden>
   Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>

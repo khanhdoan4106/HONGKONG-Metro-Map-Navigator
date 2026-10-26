@@ -3,8 +3,7 @@
 import { login, getSession, APP_PAGE } from './auth/auth.js';
 import { stations } from './data/stations.js';
 import { lineProfiles } from './data/lines.js';
-import { railEdgeCount } from './core/graph.js';
-import { drawNetworkArt } from './ui/network-art.js';
+import { drawLineBundle, fillLineStrip } from './ui/line-bundle.js';
 
 if (getSession()) location.replace(APP_PAGE);
 
@@ -16,20 +15,19 @@ const username = $('username');
 const password = $('password');
 const toggle = $('toggle-password');
 const capsHint = $('caps-hint');
+const submitHtml = submit.innerHTML;
 
-// ----- Phần trang trí: số liệu và sơ đồ lấy từ dữ liệu thật -----
-const railLines = Object.entries(lineProfiles).filter(([code]) => code !== 'XFER');
-$('stat-stations').textContent = stations.length;
-$('stat-lines').textContent = railLines.length;
-$('stat-edges').textContent = railEdgeCount;
-$('line-strip').innerHTML = railLines.map(([, p]) => `<i style="--line:${p.color}"></i>`).join('');
-drawNetworkArt($('network-canvas'));
+// ----- Trang trí -----
+drawLineBundle($('line-bundle'));
+fillLineStrip($('card-strip'));
+const lineCount = Object.keys(lineProfiles).filter(code => code !== 'XFER').length;
+$('network-meta').textContent = `Hong Kong MTR · ${stations.length} ga · ${lineCount} tuyến`;
 
 // ----- Form -----
-function showError(message, fields = []) {
+function showError(message, fieldIds = []) {
   errorBox.textContent = message;
   errorBox.hidden = !message;
-  ['field-username', 'field-password'].forEach(id => $(id).classList.toggle('invalid', fields.includes(id)));
+  ['field-username', 'field-password'].forEach(id => $(id).classList.toggle('invalid', fieldIds.includes(id)));
   if (message) {
     errorBox.classList.remove('shake');
     void errorBox.offsetWidth; // chạy lại animation
@@ -39,14 +37,14 @@ function showError(message, fields = []) {
 
 function setLoading(loading) {
   submit.disabled = loading;
-  submit.innerHTML = loading ? '<span class="spinner"></span>Đang đăng nhập...' : 'Đăng nhập';
+  submit.innerHTML = loading ? '<span class="spinner"></span><span>Đang đăng nhập</span>' : submitHtml;
 }
 
 toggle.addEventListener('click', () => {
-  const visible = password.type === 'text';
-  password.type = visible ? 'password' : 'text';
-  toggle.textContent = visible ? 'Hiện' : 'Ẩn';
-  toggle.setAttribute('aria-pressed', String(!visible));
+  const show = password.type === 'password';
+  password.type = show ? 'text' : 'password';
+  toggle.setAttribute('aria-pressed', String(show));
+  toggle.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
   password.focus();
 });
 
@@ -54,7 +52,9 @@ password.addEventListener('keyup', event => {
   capsHint.hidden = !event.getModifierState?.('CapsLock');
 });
 
-form.addEventListener('input', () => showError(''));
+form.addEventListener('input', () => {
+  if (!errorBox.hidden) showError('');
+});
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
@@ -62,7 +62,7 @@ form.addEventListener('submit', async event => {
 
   if (!name || !password.value) {
     const missing = [!name && 'field-username', !password.value && 'field-password'].filter(Boolean);
-    showError('Vui lòng nhập tên đăng nhập và mật khẩu.', missing);
+    showError('Nhập tên đăng nhập và mật khẩu để tiếp tục.', missing);
     (name ? password : username).focus();
     return;
   }
