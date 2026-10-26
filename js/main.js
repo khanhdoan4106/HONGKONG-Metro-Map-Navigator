@@ -187,7 +187,7 @@ function startApp(session) {
 
   // ---------------------------------------------------------------- flow
   function enterStartMode() {
-    mode = 'start';
+    setMode('start');
     $('route-section').style.display = 'none';
     routeLayer.clear();
     network.redraw(); // tắt khả năng bấm chặn đoạn
@@ -210,7 +210,7 @@ function startApp(session) {
       routeLayer.clear();
       $('route-section').style.display = 'none';
       markerStart = pointMarker(map, event.latlng, 'start');
-      mode = 'end';
+      setMode('end');
       setStatus('Chọn điểm kết thúc trên bản đồ');
       setGuideTip({
         left: 'Tốt, đã có điểm đi. Giờ chọn điểm đến, tớ sẽ săn điểm ăn chơi dọc tuyến.',
@@ -223,7 +223,7 @@ function startApp(session) {
 
     if (mode === 'end') {
       markerEnd = pointMarker(map, event.latlng, 'end');
-      mode = 'done';
+      setMode('done');
       updateRoute();
     }
   }
@@ -234,24 +234,38 @@ function startApp(session) {
     markerEnd = null;
     routeLayer.clear();
 
-    scale = 1;
-    const panel = $('panel');
-    panel.style.transform = '';
-    panel.style.maxHeight = '';
     $('route-section').style.display = 'none';
 
-    mode = initialMode;
+    setMode(initialMode);
     network.redraw();
     resetGuideTips();
     showIdleStatus();
   }
 
+  // Phóng to / thu nhỏ thanh bên (CSS zoom); bản đồ co giãn theo bề rộng mới
   function applyZoom() {
-    const panel = $('panel');
-    panel.style.transform = `scale(${scale})`;
-    panel.style.transformOrigin = 'top right';
-    // Khi scale > 1, thu max-height để ctrl-row không bị đẩy ra ngoài viewport
-    panel.style.maxHeight = `calc((100vh - 32px) / ${scale})`;
+    document.documentElement.style.setProperty('--ui-scale', scale.toFixed(2));
+    requestAnimationFrame(() => map.invalidateSize());
+  }
+
+  // Thanh bước: admin có thêm bước "Chặn đoạn", hành khách bắt đầu từ "Điểm đi"
+  const stepOrder = admin ? ['block', 'start', 'end', 'done'] : ['start', 'end', 'done'];
+  function renderSteps() {
+    const current = stepOrder.indexOf(mode);
+    document.querySelectorAll('#steps [data-step]').forEach(li => {
+      const index = stepOrder.indexOf(li.dataset.step);
+      li.hidden = index === -1;
+      li.querySelector('.step-num').textContent = index + 1;
+      li.classList.toggle('is-done', index !== -1 && index < current);
+      li.classList.toggle('is-current', index === current);
+      if (index === current) li.setAttribute('aria-current', 'step');
+      else li.removeAttribute('aria-current');
+    });
+  }
+
+  function setMode(next) {
+    mode = next;
+    renderSteps();
   }
 
   // ---------------------------------------------------------------- events
@@ -295,6 +309,7 @@ function startApp(session) {
   blockedStore.subscribe(refreshBlocked);
 
   // ---------------------------------------------------------------- boot
+  renderSteps();
   initGuide(session.role);
   renderTourModeButtons();
   renderBlockedPanel({ keys: blockedStore.keys(), meta: key => blockedStore.meta(key), canEdit: admin });

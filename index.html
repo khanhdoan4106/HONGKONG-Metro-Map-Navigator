@@ -15,33 +15,33 @@
   <link rel="stylesheet" href="css/panel.css"/>
   <link rel="stylesheet" href="css/auth.css"/>
   <link rel="stylesheet" href="css/responsive.css"/>
+  <link rel="stylesheet" href="css/app-layout.css"/>
 </head>
 <body class="auth-pending">
 
 <div id="map"></div>
 
-<div class="map-frame" aria-hidden="true">
-  <span class="corner top-left"></span>
-  <span class="corner top-right"></span>
-  <span class="corner bottom-left"></span>
-  <span class="corner bottom-right"></span>
-</div>
-
-<div id="line-legend" aria-label="MTR line legend">
-  <div class="legend-title">Mạng MTR</div>
+<!-- Chú thích tuyến: thu gọn thành một nút, mở ra danh sách 10 tuyến -->
+<details id="line-legend">
+  <summary>
+    <span class="legend-dots" aria-hidden="true">
+      <i style="--line:#e2231a"></i><i style="--line:#007dc5"></i><i style="--line:#00a040"></i><i style="--line:#9a3b26"></i><i style="--line:#6cc4e8"></i><i style="--line:#f7941d"></i><i style="--line:#00888a"></i><i style="--line:#7d499d"></i><i style="--line:#b5bd00"></i><i style="--line:#f08bb4"></i>
+    </span>
+    <span>Chú thích tuyến</span>
+  </summary>
   <div class="legend-grid">
-    <span><i style="--line:#e2231a"></i>TWL - Tsuen Wan Line</span>
-    <span><i style="--line:#007dc5"></i>ISL - Island Line</span>
-    <span><i style="--line:#00a040"></i>KTL - Kwun Tong Line</span>
-    <span><i style="--line:#9a3b26"></i>TML - Tuen Ma Line</span>
-    <span><i style="--line:#6cc4e8"></i>EAL - East Rail Line</span>
-    <span><i style="--line:#f7941d"></i>TCL - Tung Chung Line</span>
-    <span><i style="--line:#00888a"></i>AEL - Airport Express</span>
-    <span><i style="--line:#7d499d"></i>TKL - Tseung Kwan O Line</span>
-    <span><i style="--line:#b5bd00"></i>SIL - South Island Line</span>
-    <span><i style="--line:#f08bb4"></i>DRL - Disneyland Resort</span>
+    <span><i style="--line:#e2231a"></i>TWL · Tsuen Wan Line</span>
+    <span><i style="--line:#007dc5"></i>ISL · Island Line</span>
+    <span><i style="--line:#00a040"></i>KTL · Kwun Tong Line</span>
+    <span><i style="--line:#9a3b26"></i>TML · Tuen Ma Line</span>
+    <span><i style="--line:#6cc4e8"></i>EAL · East Rail Line</span>
+    <span><i style="--line:#f7941d"></i>TCL · Tung Chung Line</span>
+    <span><i style="--line:#00888a"></i>AEL · Airport Express</span>
+    <span><i style="--line:#7d499d"></i>TKL · Tseung Kwan O Line</span>
+    <span><i style="--line:#b5bd00"></i>SIL · South Island Line</span>
+    <span><i style="--line:#f08bb4"></i>DRL · Disneyland Resort</span>
   </div>
-</div>
+</details>
 
 <button id="tour-guide" type="button" aria-label="Hướng dẫn viên anime">
   <div class="guide-bubble">
@@ -198,60 +198,57 @@
   </div>
 </button>
 
-<div id="panel">
+<aside id="panel" aria-label="Bảng điều khiển">
 
-  <div class="panel-header">
+  <header class="panel-header">
     <img class="logo logo-img" src="assets/logo.svg" alt="" width="38" height="38">
     <div class="header-text">
       <h1>MTR Navigator</h1>
       <p>Hong Kong MTR Network</p>
     </div>
-  </div>
+  </header>
 
   <div id="user-bar"></div>
 
+  <!-- Các bước thao tác; bước hiện tại được tô sáng -->
+  <ol class="steps" id="steps" aria-label="Các bước">
+    <li data-step="block" title="Chặn đoạn metro"><span class="step-num">1</span><span>Chặn</span></li>
+    <li data-step="start"><span class="step-num">2</span><span>Điểm đi</span></li>
+    <li data-step="end"><span class="step-num">3</span><span>Điểm đến</span></li>
+    <li data-step="done" title="Xem tuyến đường"><span class="step-num">4</span><span>Tuyến</span></li>
+  </ol>
+
   <div class="panel-body">
 
-    <!-- STATUS -->
     <div id="status-badge">
       <span class="dot"></span>
       <span id="status-text">Đang tải mạng metro Hong Kong</span>
     </div>
 
-    <!-- TOUR MODE -->
-    <div class="tour-mode-card">
-      <div class="mode-card-head">
-        <span class="section-label">Chế độ du lịch</span>
+    <section class="sb-section">
+      <div class="sb-head">
+        <h2 class="sb-title">Chế độ tìm đường</h2>
         <span id="active-mode-note">Cân bằng</span>
       </div>
       <div class="tour-mode-grid" aria-label="Chế độ ưu tiên tuyến đường">
-        <button class="mode-pill active" type="button" data-tour-mode="balanced">
-          <span>Cân bằng</span>
-          <small>thời gian + điểm chơi</small>
-        </button>
-        <button class="mode-pill" type="button" data-tour-mode="fastest">
-          <span>Nhanh nhất</span>
-          <small>ưu tiên thời gian</small>
-        </button>
-        <button class="mode-pill" type="button" data-tour-mode="lowTransfers">
-          <span>Ít đổi tuyến</span>
-          <small>hạn chế chuyển tuyến</small>
-        </button>
-        <button class="mode-pill" type="button" data-tour-mode="food">
-          <span>Ăn uống</span>
-          <small>món ngon dọc tuyến</small>
-        </button>
-        <button class="mode-pill" type="button" data-tour-mode="checkin">
-          <span>Check-in</span>
-          <small>điểm chụp ảnh</small>
-        </button>
+        <button class="mode-pill active" type="button" data-tour-mode="balanced" title="Cân bằng thời gian và điểm chơi"><span>Cân bằng</span><small>thời gian + điểm chơi</small></button>
+        <button class="mode-pill" type="button" data-tour-mode="fastest" title="Ưu tiên thời gian"><span>Nhanh nhất</span><small>ưu tiên thời gian</small></button>
+        <button class="mode-pill" type="button" data-tour-mode="lowTransfers" title="Hạn chế chuyển tuyến"><span>Ít đổi tuyến</span><small>hạn chế chuyển tuyến</small></button>
+        <button class="mode-pill" type="button" data-tour-mode="food" title="Món ngon dọc tuyến"><span>Ăn uống</span><small>món ngon dọc tuyến</small></button>
+        <button class="mode-pill" type="button" data-tour-mode="checkin" title="Điểm chụp ảnh"><span>Check-in</span><small>điểm chụp ảnh</small></button>
       </div>
-    </div>
+    </section>
 
-    <!-- BLOCKED SECTION -->
-    <div style="padding:14px 16px 0;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span class="section-label" id="blocked-section-label">Đoạn bị cấm</span>
+    <section id="route-section" class="sb-section" style="display:none;">
+      <div class="sb-head">
+        <h2 class="sb-title">Tuyến đường</h2>
+      </div>
+      <div id="route-body"></div>
+    </section>
+
+    <section class="sb-section">
+      <div class="sb-head">
+        <h2 class="sb-title" id="blocked-section-label">Đoạn bị cấm</h2>
         <span class="blocked-head-actions">
           <button id="clear-blocked-btn" class="clear-blocked-btn" type="button" hidden>Gỡ tất cả</button>
           <span id="blocked-count-badge" class="blocked-count-badge" style="display:none;"></span>
@@ -261,32 +258,23 @@
         <div class="blocked-empty" id="blocked-empty-msg">Chưa có đoạn nào bị cấm</div>
         <div id="blocked-list"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- ROUTE RESULT -->
-    <div id="route-section" style="display:none;padding:14px 16px 0;">
-      <div class="divider" style="margin-bottom:14px;"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <span class="section-label">Tuyến đường</span>
-      </div>
-      <div id="route-body"></div>
-    </div>
-
-    <div style="height:6px;"></div>
   </div>
 
-  <div class="divider"></div>
-  <div class="ctrl-row">
+  <footer class="ctrl-row">
     <button id="confirm-btn" class="btn primary" type="button">
       Xác nhận
       <span id="blocked-count-chip"></span>
     </button>
-    <button id="zoom-in-btn" class="btn" type="button" title="Phóng to panel">＋</button>
-    <button id="zoom-out-btn" class="btn" type="button" title="Thu nhỏ panel">－</button>
-    <button id="reset-btn" class="btn reset" type="button" title="Đặt lại bản đồ">↺</button>
-  </div>
+    <button id="reset-btn" class="btn reset" type="button" title="Xoá tuyến và chọn lại">↺ Làm lại</button>
+    <span class="zoom-group" role="group" aria-label="Cỡ chữ bảng điều khiển">
+      <button id="zoom-out-btn" class="btn icon" type="button" title="Thu nhỏ bảng điều khiển">A−</button>
+      <button id="zoom-in-btn" class="btn icon" type="button" title="Phóng to bảng điều khiển">A+</button>
+    </span>
+  </footer>
 
-</div>
+</aside>
 
 <div id="file-protocol-warning" class="file-protocol-warning" hidden>
   Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>

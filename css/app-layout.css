@@ -1,0 +1,259 @@
+/* Bố cục trang bản đồ (nạp sau cùng, ghi đè vị trí của các file cũ).
+
+   ┌─ thanh bên 400px ───────────┬──────────────────── bản đồ ───────────────────────┐
+   │ [logo] MTR Navigator         │ [● ● ● Chú thích tuyến]            [lớp bản đồ]   │
+   │ A Admin  Quản trị   Đăng xuất│                                                   │
+   │ 1 Chặn │2 Điểm đi│3 Đến│4 Tuyến│                                                   │
+   │ trạng thái                   │                                                   │
+   │ Chế độ: (Cân bằng)(Nhanh)…   │                                                   │
+   │ Tuyến đường …                │                                                   │
+   │ Đoạn bị cấm …                │ [mascot + lời thoại]           [lời thoại+mascot] │
+   │ [Xác nhận] [↺ Làm lại] A− A+ │                                                   │
+   └──────────────────────────────┴───────────────────────────────────────────────────┘ */
+
+:root {
+  --ui-scale: 1;
+  --sidebar-base: 400px;
+  --sidebar-w: calc(var(--sidebar-base) * var(--ui-scale));
+}
+
+/* ---------- Bản đồ chiếm phần còn lại ---------- */
+#map {
+  left: var(--sidebar-w);
+  filter: none;
+}
+
+/* ---------- Thanh bên cố định ---------- */
+#panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: auto;
+  bottom: auto;
+  width: var(--sidebar-base);
+  height: calc(100vh / var(--ui-scale));
+  max-height: none;
+  zoom: var(--ui-scale);
+  border: none;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--panel2);
+  box-shadow: 4px 0 24px rgba(16,24,40,0.08);
+  backdrop-filter: none;
+  transform: none !important;
+  transition: none;
+}
+
+#panel .panel-header {
+  padding: 18px 20px 16px;
+  background: var(--panel2);
+}
+
+#user-bar { padding: 10px 20px; }
+
+/* ---------- Thanh bước ---------- */
+.steps {
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.steps li {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 9px;
+  border-top: 3px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s;
+}
+.steps li > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+
+.step-num {
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--panel3);
+  color: var(--muted);
+  transition: background 0.2s, color 0.2s;
+}
+
+.steps li.is-done { border-top-color: var(--green); color: var(--text); }
+.steps li.is-done .step-num { background: var(--green); color: #fff; }
+.steps li.is-current { border-top-color: var(--accent); color: var(--accent); }
+.steps li.is-current .step-num { background: var(--accent); color: #fff; box-shadow: 0 0 0 4px rgba(0,111,189,0.15); }
+
+/* ---------- Nội dung cuộn ---------- */
+#panel .panel-body { padding-bottom: 18px; }
+
+#status-badge { margin: 14px 20px 0; }
+
+.sb-section { padding: 18px 20px 0; }
+
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sb-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0;
+}
+
+#active-mode-note {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Chế độ tìm đường: hàng nút gọn thay cho lưới thẻ */
+.tour-mode-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tour-mode-grid .mode-pill {
+  min-height: 0;
+  flex-direction: row;
+  align-items: center;
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: none;
+  transform: none;
+}
+.tour-mode-grid .mode-pill span { font-size: 13px; font-weight: 600; }
+.tour-mode-grid .mode-pill small { display: none; }
+.tour-mode-grid .mode-pill:hover { border-color: var(--accent); background: rgba(0,111,189,0.05); transform: none; }
+.tour-mode-grid .mode-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,111,189,0.25);
+}
+.tour-mode-grid .mode-pill.active::before { display: none; }
+
+/* ---------- Thanh nút cuối ---------- */
+#panel .ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  background: var(--panel2);
+}
+#panel .ctrl-row .btn { flex: 0 0 auto; padding: 0 14px; height: 40px; }
+#panel .ctrl-row .btn.primary { flex: 1; }
+#panel .ctrl-row .btn.reset { white-space: nowrap; }
+.zoom-group { display: inline-flex; gap: 4px; margin-left: auto; }
+#panel .ctrl-row .btn.icon { width: 40px; padding: 0; font-weight: 600; }
+.role-user #panel .ctrl-row .btn.reset { flex: 1; }
+
+/* ---------- Chú thích tuyến thu gọn ---------- */
+#line-legend {
+  left: calc(var(--sidebar-w) + 16px);
+  top: 16px;
+  padding: 0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+#line-legend[open] { border-radius: 14px; }
+
+#line-legend summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 10px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  user-select: none;
+}
+#line-legend summary::-webkit-details-marker { display: none; }
+#line-legend summary::after { content: '▾'; color: var(--muted); font-size: 11px; transition: transform 0.2s; }
+#line-legend[open] summary::after { transform: rotate(180deg); }
+
+.legend-dots { display: inline-flex; }
+.legend-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--line);
+  box-shadow: 0 0 0 2px #fff;
+}
+.legend-dots i + i { margin-left: -3px; }
+
+#line-legend .legend-grid { padding: 4px 14px 12px; gap: 7px; }
+
+/* ---------- Mascot gom về hai góc dưới của bản đồ ---------- */
+#tour-guide {
+  left: calc(var(--sidebar-w) + 12px);
+  bottom: 14px;
+  transform: scale(0.86);
+  transform-origin: left bottom;
+}
+#tour-guide-right {
+  right: 14px;
+  bottom: 26px;
+  transform: scale(0.86);
+  transform-origin: right bottom;
+}
+
+.leaflet-top.leaflet-right { margin-top: 4px; margin-right: 4px; }
+
+/* ---------- Màn hình hẹp: thanh bên thành bảng trượt dưới ---------- */
+@media (max-width: 1100px) {
+  #tour-guide-right { display: none; }
+}
+
+@media (max-width: 720px) {
+  :root { --sidebar-w: 0px; }
+  #map { left: 0; bottom: 56vh; }
+  #panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: 58vh;
+    zoom: 1;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -10px 30px rgba(16,24,40,0.14);
+  }
+  #panel .panel-header { padding: 12px 16px; }
+  #panel .header-text p { display: none; }
+  #user-bar { padding: 8px 16px; }
+  .steps { padding: 10px 16px; }
+  .steps li > span:last-child { font-size: 11px; }
+  #status-badge { margin: 12px 16px 0; }
+  .sb-section { padding: 14px 16px 0; }
+  #panel .ctrl-row { padding-left: 16px; padding-right: 16px; }
+  .zoom-group { display: none; }
+  #line-legend { display: block; left: 12px; top: 12px; }
+  #tour-guide { display: none; }
+}

@@ -26,95 +26,96 @@
 </head>
 <body>
 
-<canvas id="scene" class="scene" aria-hidden="true"></canvas>
-<div class="scene-shade" aria-hidden="true"></div>
+<div class="auth-shell">
 
-<header class="top">
-  <a class="brand" href="./">
-    <img class="brand-logo" src="assets/logo.svg" alt="" width="36" height="36">
-    <span class="brand-name">MTR <span>Navigator</span></span>
-  </a>
-  <div class="clock" aria-label="Giờ Hong Kong">
-    <span class="clock-label">Giờ Hong Kong</span>
-    <span class="clock-time" id="hk-clock">--:--</span>
-  </div>
-</header>
+  <!-- ================= Vùng hình ảnh: cảnh 3D sân ga + dải thông tin ================= -->
+  <section class="visual" aria-hidden="true">
+    <canvas id="scene" class="scene"></canvas>
+    <div class="scene-shade"></div>
 
-<main class="stage">
-
-  <div class="left">
-
-  <!-- Bản đồ mạng lưới + tuyến A* từ ga đang dừng, có đoàn tàu nhỏ chạy dọc tuyến -->
-  <figure class="route-card" id="route-card" aria-hidden="true">
-    <figcaption class="rc-head">
-      <span class="rc-kicker">Tuyến gợi ý bởi A*</span>
-      <span class="rc-title" data-rm="title">Central đến Airport</span>
-      <span class="rc-meta" data-rm="meta"></span>
-    </figcaption>
-    <svg class="rc-map"></svg>
-    <div class="rc-legs" data-rm="legs"></div>
-  </figure>
-
-  <!-- Bảng thông tin chuyến tàu, đồng bộ với đoàn tàu trong cảnh 3D -->
-  <aside class="hud" id="hud" aria-hidden="true">
-    <div class="hud-status">
-      <span class="pulse"></span>
-      <span id="hud-phase">Tàu đang vào ga</span>
+    <div class="visual-top">
+      <span class="status-pill"><span class="pulse"></span><span id="hud-phase">Tàu đang vào ga</span></span>
+      <span class="clock"><span class="clock-label">Giờ Hong Kong</span><span class="clock-time" id="hk-clock">--:--</span></span>
     </div>
-    <div class="hud-station">
-      <span class="hud-zh" id="hud-zh">中環</span>
-      <span class="hud-en" id="hud-en">Central</span>
-    </div>
-    <div class="hud-line">
-      <span class="hud-chip" id="hud-code">ISL</span>
-      <span id="hud-line">Island Line</span>
-      <span class="hud-dir" id="hud-dir">Hướng Kennedy Town</span>
-    </div>
-    <div class="hud-next">
-      <span class="hud-next-label">Ga kế tiếp</span>
-      <span class="hud-next-name" id="hud-next">Sheung Wan</span>
-      <span class="hud-next-time"><strong id="hud-min">1</strong> phút</span>
-    </div>
-  </aside>
-  </div>
 
-  <section class="panel" aria-labelledby="login-title">
-    <h1 id="login-title">Đăng nhập</h1>
-    <p class="lead">Dùng tài khoản được cấp để mở bản đồ tuyến tàu điện Hong Kong.</p>
-
-    <form id="login-form" class="form" novalidate>
-      <div class="field" id="field-username">
-        <label for="username">Tên đăng nhập</label>
-        <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
-      </div>
-
-      <div class="field" id="field-password">
-        <div class="label-row">
-          <label for="password">Mật khẩu</label>
-          <span id="caps-hint" class="caps-hint" hidden>Caps Lock đang bật</span>
+    <div class="dock" id="hud">
+      <div class="dock-cell dock-station">
+        <div class="dock-name">
+          <span class="hud-zh" id="hud-zh">中環</span>
+          <span class="hud-en" id="hud-en">Central</span>
         </div>
-        <div class="password-wrap">
-          <input id="password" name="password" type="password" autocomplete="current-password" required>
-          <button id="toggle-password" class="toggle-password" type="button" aria-controls="password" aria-pressed="false">Hiện</button>
+        <div class="dock-line">
+          <span class="hud-chip" id="hud-code">ISL</span>
+          <span id="hud-line">Island Line</span>
+          <span class="hud-dir" id="hud-dir">Hướng Kennedy Town</span>
         </div>
       </div>
 
-      <label class="check">
-        <input id="remember" type="checkbox">
-        <span>Ghi nhớ đăng nhập trên máy này</span>
-      </label>
+      <div class="dock-cell dock-next">
+        <span class="dock-label">Ga kế tiếp</span>
+        <span class="dock-next-name" id="hud-next">Sheung Wan</span>
+        <span class="dock-next-time"><strong id="hud-min">1</strong> phút</span>
+      </div>
 
-      <div id="login-error" class="alert" role="alert" hidden></div>
-
-      <button id="login-submit" class="submit" type="submit">Đăng nhập</button>
-    </form>
-
-    <p class="roles">
-      Tài khoản <strong>quản trị</strong> có thể chặn đoạn metro khi có sự cố.
-      Tài khoản <strong>người dùng</strong> tìm đường và được tự động đi vòng qua các đoạn đó.
-    </p>
+      <figure class="dock-cell dock-route" id="route-card">
+        <figcaption class="rc-head">
+          <span class="dock-label">Tuyến gợi ý bởi A*</span>
+          <span class="rc-title" data-rm="title">Central đến Airport</span>
+          <span class="rc-meta" data-rm="meta"></span>
+          <span class="rc-legs" data-rm="legs"></span>
+        </figcaption>
+        <svg class="rc-map"></svg>
+      </figure>
+    </div>
   </section>
-</main>
+
+  <!-- ================= Cột đăng nhập ================= -->
+  <main class="side">
+    <a class="brand" href="./">
+      <img class="brand-logo" src="assets/logo.svg" alt="" width="36" height="36">
+      <span class="brand-name">MTR <span>Navigator</span></span>
+    </a>
+
+    <section class="auth" aria-labelledby="login-title">
+      <h1 id="login-title">Đăng nhập</h1>
+      <p class="lead">Dùng tài khoản được cấp để mở bản đồ tuyến tàu điện Hong Kong.</p>
+
+      <form id="login-form" class="form" novalidate>
+        <div class="field" id="field-username">
+          <label for="username">Tên đăng nhập</label>
+          <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+        </div>
+
+        <div class="field" id="field-password">
+          <div class="label-row">
+            <label for="password">Mật khẩu</label>
+            <span id="caps-hint" class="caps-hint" hidden>Caps Lock đang bật</span>
+          </div>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <button id="toggle-password" class="toggle-password" type="button" aria-controls="password" aria-pressed="false">Hiện</button>
+          </div>
+        </div>
+
+        <label class="check">
+          <input id="remember" type="checkbox">
+          <span>Ghi nhớ đăng nhập trên máy này</span>
+        </label>
+
+        <div id="login-error" class="alert" role="alert" hidden></div>
+
+        <button id="login-submit" class="submit" type="submit">Đăng nhập</button>
+      </form>
+
+      <div class="roles">
+        <div class="role"><span class="role-dot admin"></span><p><strong>Quản trị viên</strong> chặn và mở lại đoạn metro khi có sự cố.</p></div>
+        <div class="role"><span class="role-dot user"></span><p><strong>Người dùng</strong> tìm đường, tự đi vòng qua các đoạn đang tạm dừng.</p></div>
+      </div>
+    </section>
+
+    <p class="side-foot">Dữ liệu ga từ MTR Open Data và Wikidata.</p>
+  </main>
+</div>
 
 <div id="file-protocol-warning" class="file-protocol-warning" hidden>
   Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>

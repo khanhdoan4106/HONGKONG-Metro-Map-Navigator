@@ -35,8 +35,8 @@ export function createMap(elementId = 'map') {
 
   // Lớp sáng hiển thị tuyến MTR rõ nhất
   cartoLight.addTo(map);
-  // Góc dưới phải để không đè lên mascot và legend
-  L.control.layers(baseMaps, null, { position: 'bottomright' }).addTo(map);
+  // Góc trên phải; góc dưới dành cho hai mascot
+  L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
 
   return map;
 }
