@@ -267,9 +267,26 @@ function startApp(session) {
     const button = event.target.closest('[data-unblock]');
     if (button && admin) blockedStore.remove(button.dataset.unblock);
   });
-  $('clear-blocked-btn').addEventListener('click', () => {
-    if (admin && confirm(`Bỏ cấm toàn bộ ${blockedStore.size} đoạn?`)) blockedStore.clear();
+  // Xác nhận 2 bước ngay trên nút (không dùng confirm() vì bị chặn trong iframe/trang nhúng)
+  let clearArmedTimer = null;
+  const clearBtn = $('clear-blocked-btn');
+  clearBtn.addEventListener('click', () => {
+    if (!admin) return;
+    if (!clearArmedTimer) {
+      clearBtn.textContent = 'Bấm lần nữa để gỡ';
+      clearBtn.classList.add('armed');
+      clearArmedTimer = setTimeout(disarmClear, 3000);
+      return;
+    }
+    disarmClear();
+    blockedStore.clear();
   });
+  function disarmClear() {
+    clearTimeout(clearArmedTimer);
+    clearArmedTimer = null;
+    clearBtn.textContent = 'Gỡ tất cả';
+    clearBtn.classList.remove('armed');
+  }
   $('confirm-btn').addEventListener('click', () => admin && enterStartMode());
   $('zoom-in-btn').addEventListener('click', () => { scale = Math.min(scale + 0.1, 1.5); applyZoom(); });
   $('zoom-out-btn').addEventListener('click', () => { scale = Math.max(scale - 0.1, 0.6); applyZoom(); });

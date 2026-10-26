@@ -84,6 +84,12 @@ body.auth-pending { visibility: hidden; }
   padding: 0;
 }
 .clear-blocked-btn:hover { text-decoration: underline; }
+.clear-blocked-btn.armed {
+  font-weight: 700;
+  background: rgba(214,69,69,0.1);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
 
 .blocked-meta {
   margin-top: 3px;
