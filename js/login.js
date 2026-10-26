@@ -1,7 +1,8 @@
 // Trang đăng nhập.
 
 import { login, getSession, APP_PAGE } from './auth/auth.js';
-import { startStationSign } from './ui/station-sign.js';
+import { getSignStops } from './core/sign-stops.js';
+import { createStationScene, webglAvailable } from './ui/station-scene.js';
 
 if (getSession()) location.replace(APP_PAGE);
 
@@ -14,8 +15,70 @@ const password = $('password');
 const toggle = $('toggle-password');
 const capsHint = $('caps-hint');
 
-startStationSign($('platform'));
+// ================= Cảnh sân ga + bảng thông tin =================
+const PHASE_TEXT = {
+  arriving: 'Tàu đang vào ga',
+  stopped: 'Tàu đã dừng',
+  doors: 'Cửa đang mở',
+  departing: 'Tàu rời ga',
+  waiting: 'Chuyến kế tiếp sắp tới'
+};
 
+const hud = $('hud');
+['hud-zh', 'hud-en', 'hud-code', 'hud-line', 'hud-dir', 'hud-next', 'hud-min'].forEach(id => $(id).classList.add('swap'));
+
+let firstStop = true;
+function showStop(stop) {
+  const fill = () => {
+    document.documentElement.style.setProperty('--line', stop.color);
+    $('hud-zh').textContent = stop.zh;
+    $('hud-en').textContent = stop.en;
+    $('hud-code').textContent = stop.lineCode;
+    $('hud-line').textContent = stop.lineName;
+    $('hud-dir').textContent = `Hướng ${stop.terminus}`;
+    $('hud-next').textContent = stop.next;
+    $('hud-min').textContent = stop.minutes;
+  };
+  if (firstStop) {
+    firstStop = false;
+    fill();
+    return;
+  }
+  hud.classList.add('is-changing');
+  setTimeout(() => {
+    fill();
+    hud.classList.remove('is-changing');
+  }, 350);
+}
+
+const stops = getSignStops();
+const canvas = $('scene');
+
+if (window.THREE && webglAvailable()) {
+  try {
+    createStationScene(canvas, {
+      stops,
+      onStation: showStop,
+      onPhase: phase => { $('hud-phase').textContent = PHASE_TEXT[phase] || ''; }
+    });
+    requestAnimationFrame(() => canvas.classList.add('ready'));
+  } catch (err) {
+    console.warn('Không dựng được cảnh 3D, dùng nền tĩnh:', err);
+    showStop(stops[0]);
+  }
+} else {
+  // Không có WebGL / không tải được Three.js: giữ nền gradient và bảng thông tin tĩnh
+  showStop(stops[0]);
+  $('hud-phase').textContent = PHASE_TEXT.stopped;
+}
+
+// Đồng hồ giờ Hong Kong
+const clockFmt = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false });
+const tick = () => { $('hk-clock').textContent = clockFmt.format(new Date()); };
+tick();
+setInterval(tick, 15000);
+
+// ================= Form =================
 function showError(message, fieldIds = []) {
   errorBox.textContent = message;
   errorBox.hidden = !message;

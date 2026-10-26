@@ -7,87 +7,101 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
   <!-- Chỉ tải đúng các chữ Hán trên biển tên ga -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&text=%E4%B8%AD%E7%92%B0%E9%87%91%E9%90%98%E5%B0%96%E6%B2%99%E5%92%80%E6%97%BA%E8%A7%92%E4%B9%9D%E9%BE%8D%E5%A1%98%E9%8A%85%E9%91%BC%E7%81%A3&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&text=%E4%B8%AD%E7%92%B0%E9%87%91%E9%90%98%E5%B0%96%E6%B2%99%E5%92%80%E6%97%BA%E8%A7%92%E4%B9%9D%E9%BE%8D%E5%A1%98%E9%8A%85%E9%91%BC%E7%81%A3&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/login.css"/>
+
+  <!-- Three.js r147 (bản UMD) + các phần mở rộng cho cảnh 3D sân ga -->
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/CopyShader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 </head>
 <body>
 
-<div class="shell">
+<canvas id="scene" class="scene" aria-hidden="true"></canvas>
+<div class="scene-shade" aria-hidden="true"></div>
 
-  <!-- Sân ga: tường gạch men, biển tên ga song ngữ, bảng ga kế tiếp -->
-  <section class="platform" id="platform" aria-hidden="true">
-    <div class="sign">
-      <div class="sign-line">
-        <span class="line-code" data-sign="code">ISL</span>
-        <span class="line-name" data-sign="line">Island Line</span>
-        <span class="terminus" data-sign="terminus">Hướng Kennedy Town</span>
-      </div>
-      <div class="sign-name">
-        <span class="sign-zh" data-sign="zh">中環</span>
-        <span class="sign-en" data-sign="en">Central</span>
-      </div>
-    </div>
+<header class="top">
+  <a class="brand" href="./">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><path d="M7 22V10l9 7.5L25 10v12"/></svg>
+    </span>
+    <span class="brand-name">MTR Navigator</span>
+  </a>
+  <div class="clock" aria-label="Giờ Hong Kong">
+    <span class="clock-label">Giờ Hong Kong</span>
+    <span class="clock-time" id="hk-clock">--:--</span>
+  </div>
+</header>
 
-    <div class="board">
-      <div class="board-row">
-        <span class="board-label">Ga kế tiếp</span>
-        <span class="board-next" data-sign="next">Sheung Wan</span>
-        <span class="board-time"><strong data-sign="min">2</strong> phút</span>
-      </div>
-      <div class="board-track"><span class="board-progress"></span></div>
+<main class="stage">
+
+  <!-- Bảng thông tin chuyến tàu, đồng bộ với đoàn tàu trong cảnh 3D -->
+  <aside class="hud" id="hud" aria-hidden="true">
+    <div class="hud-status">
+      <span class="pulse"></span>
+      <span id="hud-phase">Tàu đang vào ga</span>
     </div>
+    <div class="hud-station">
+      <span class="hud-zh" id="hud-zh">中環</span>
+      <span class="hud-en" id="hud-en">Central</span>
+    </div>
+    <div class="hud-line">
+      <span class="hud-chip" id="hud-code">ISL</span>
+      <span id="hud-line">Island Line</span>
+      <span class="hud-dir" id="hud-dir">Hướng Kennedy Town</span>
+    </div>
+    <div class="hud-next">
+      <span class="hud-next-label">Ga kế tiếp</span>
+      <span class="hud-next-name" id="hud-next">Sheung Wan</span>
+      <span class="hud-next-time"><strong id="hud-min">1</strong> phút</span>
+    </div>
+  </aside>
+
+  <section class="panel" aria-labelledby="login-title">
+    <h1 id="login-title">Đăng nhập</h1>
+    <p class="lead">Dùng tài khoản được cấp để mở bản đồ tuyến tàu điện Hong Kong.</p>
+
+    <form id="login-form" class="form" novalidate>
+      <div class="field" id="field-username">
+        <label for="username">Tên đăng nhập</label>
+        <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+      </div>
+
+      <div class="field" id="field-password">
+        <div class="label-row">
+          <label for="password">Mật khẩu</label>
+          <span id="caps-hint" class="caps-hint" hidden>Caps Lock đang bật</span>
+        </div>
+        <div class="password-wrap">
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <button id="toggle-password" class="toggle-password" type="button" aria-controls="password" aria-pressed="false">Hiện</button>
+        </div>
+      </div>
+
+      <label class="check">
+        <input id="remember" type="checkbox">
+        <span>Ghi nhớ đăng nhập trên máy này</span>
+      </label>
+
+      <div id="login-error" class="alert" role="alert" hidden></div>
+
+      <button id="login-submit" class="submit" type="submit">Đăng nhập</button>
+    </form>
+
+    <p class="roles">
+      Tài khoản <strong>quản trị</strong> có thể chặn đoạn metro khi có sự cố.
+      Tài khoản <strong>người dùng</strong> tìm đường và được tự động đi vòng qua các đoạn đó.
+    </p>
   </section>
-
-  <main class="side">
-    <a class="brand" href="./">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 32 32"><path d="M7 22V10l9 7.5L25 10v12"/></svg>
-      </span>
-      <span class="brand-name">MTR Navigator</span>
-    </a>
-
-    <div class="auth">
-      <h1>Đăng nhập</h1>
-      <p class="lead">Dùng tài khoản được cấp để mở bản đồ tuyến tàu điện Hong Kong.</p>
-
-      <form id="login-form" class="form" novalidate>
-        <div class="field" id="field-username">
-          <label for="username">Tên đăng nhập</label>
-          <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
-        </div>
-
-        <div class="field" id="field-password">
-          <div class="label-row">
-            <label for="password">Mật khẩu</label>
-            <span id="caps-hint" class="caps-hint" hidden>Caps Lock đang bật</span>
-          </div>
-          <div class="password-wrap">
-            <input id="password" name="password" type="password" autocomplete="current-password" required>
-            <button id="toggle-password" class="toggle-password" type="button" aria-controls="password" aria-pressed="false">Hiện</button>
-          </div>
-        </div>
-
-        <label class="check">
-          <input id="remember" type="checkbox">
-          <span>Ghi nhớ đăng nhập trên máy này</span>
-        </label>
-
-        <div id="login-error" class="alert" role="alert" hidden></div>
-
-        <button id="login-submit" class="submit" type="submit">Đăng nhập</button>
-      </form>
-
-      <p class="roles">
-        Tài khoản <strong>quản trị</strong> có thể chặn đoạn metro khi có sự cố.
-        Tài khoản <strong>người dùng</strong> tìm đường và được tự động đi vòng qua các đoạn đó.
-      </p>
-    </div>
-
-    <p class="credit">Dữ liệu ga từ MTR Open Data và Wikidata.</p>
-  </main>
-</div>
+</main>
 
 <div id="file-protocol-warning" class="file-protocol-warning" hidden>
   Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>
