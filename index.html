@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MTR Navigator · Hong Kong Network</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/map.css"/>
+  <link rel="stylesheet" href="css/guide.css"/>
+  <link rel="stylesheet" href="css/panel.css"/>
+  <link rel="stylesheet" href="css/auth.css"/>
+  <link rel="stylesheet" href="css/responsive.css"/>
 </head>
-<body>
-
-
-
+<body class="auth-pending">
 
 <div id="map"></div>
 
@@ -40,7 +42,7 @@
   </div>
 </div>
 
-<button id="tour-guide" type="button" onclick="cycleGuideTip()" aria-label="Hướng dẫn viên anime">
+<button id="tour-guide" type="button" aria-label="Hướng dẫn viên anime">
   <div class="guide-bubble">
     <span id="guide-text">Xin chào, mình sẽ gợi ý điểm chơi và món ngon dọc tuyến metro.</span>
   </div>
@@ -122,7 +124,7 @@
   </div>
 </button>
 
-<button id="tour-guide-right" class="side-guide" type="button" onclick="cycleGuideTip()" aria-label="Hướng dẫn viên anime thứ hai">
+<button id="tour-guide-right" class="side-guide" type="button" aria-label="Hướng dẫn viên anime thứ hai">
   <div class="guide-bubble right-bubble">
     <span id="guide-text-right">Tớ sẽ phụ trách nhắc các điểm nên xuống chơi!</span>
   </div>
@@ -205,6 +207,8 @@
     </div>
   </div>
 
+  <div id="user-bar"></div>
+
   <div class="panel-body">
 
     <!-- STATUS -->
@@ -220,23 +224,23 @@
         <span id="active-mode-note">Cân bằng</span>
       </div>
       <div class="tour-mode-grid" aria-label="Chế độ ưu tiên tuyến đường">
-        <button class="mode-pill active" type="button" data-tour-mode="balanced" onclick="setTourMode('balanced')">
+        <button class="mode-pill active" type="button" data-tour-mode="balanced">
           <span>Cân bằng</span>
           <small>thời gian + điểm chơi</small>
         </button>
-        <button class="mode-pill" type="button" data-tour-mode="fastest" onclick="setTourMode('fastest')">
+        <button class="mode-pill" type="button" data-tour-mode="fastest">
           <span>Nhanh nhất</span>
           <small>ưu tiên thời gian</small>
         </button>
-        <button class="mode-pill" type="button" data-tour-mode="lowTransfers" onclick="setTourMode('lowTransfers')">
+        <button class="mode-pill" type="button" data-tour-mode="lowTransfers">
           <span>Ít đổi tuyến</span>
           <small>hạn chế chuyển tuyến</small>
         </button>
-        <button class="mode-pill" type="button" data-tour-mode="food" onclick="setTourMode('food')">
+        <button class="mode-pill" type="button" data-tour-mode="food">
           <span>Ăn uống</span>
           <small>món ngon dọc tuyến</small>
         </button>
-        <button class="mode-pill" type="button" data-tour-mode="checkin" onclick="setTourMode('checkin')">
+        <button class="mode-pill" type="button" data-tour-mode="checkin">
           <span>Check-in</span>
           <small>điểm chụp ảnh</small>
         </button>
@@ -246,8 +250,11 @@
     <!-- BLOCKED SECTION -->
     <div style="padding:14px 16px 0;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <span class="section-label">Đoạn bị cấm</span>
-        <span id="blocked-count-badge" class="blocked-count-badge" style="display:none;"></span>
+        <span class="section-label" id="blocked-section-label">Đoạn bị cấm</span>
+        <span class="blocked-head-actions">
+          <button id="clear-blocked-btn" class="clear-blocked-btn" type="button" hidden>Gỡ tất cả</button>
+          <span id="blocked-count-badge" class="blocked-count-badge" style="display:none;"></span>
+        </span>
       </div>
       <div id="blocked-panel">
         <div class="blocked-empty" id="blocked-empty-msg">Chưa có đoạn nào bị cấm</div>
@@ -269,18 +276,28 @@
 
   <div class="divider"></div>
   <div class="ctrl-row">
-    <button class="btn primary" onclick="finishBlock()">
+    <button id="confirm-btn" class="btn primary" type="button">
       Xác nhận
       <span id="blocked-count-chip"></span>
     </button>
-    <button class="btn" onclick="zoomIn()">＋</button>
-    <button class="btn" onclick="zoomOut()">－</button>
-    <button class="btn reset" onclick="resetMap()">↺</button>
+    <button id="zoom-in-btn" class="btn" type="button" title="Phóng to panel">＋</button>
+    <button id="zoom-out-btn" class="btn" type="button" title="Thu nhỏ panel">－</button>
+    <button id="reset-btn" class="btn reset" type="button" title="Đặt lại bản đồ">↺</button>
   </div>
 
 </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="app.js"></script>
+<div id="file-protocol-warning" class="file-protocol-warning" hidden>
+  Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>
+  Hãy chạy qua web server, ví dụ <code>npx serve .</code> hoặc Live Server của VS Code.
+</div>
+<script>
+  if (location.protocol === 'file:') {
+    document.body.classList.remove('auth-pending');
+    document.getElementById('file-protocol-warning').hidden = false;
+  }
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
