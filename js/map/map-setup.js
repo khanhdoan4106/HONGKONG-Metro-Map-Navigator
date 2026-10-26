@@ -1,14 +1,14 @@
 // Khởi tạo bản đồ Leaflet, các lớp nền và ranh giới Hong Kong.
 //
-// Lớp nền mặc định: Esri Canvas (Light / Dark Gray) — miễn phí, không cần API key,
-// kiểu xám nhạt giống CARTO Positron cũ nên màu các tuyến MTR nổi rõ.
-//   - CARTO (basemaps.cartocdn.com) giờ yêu cầu API key, không key sẽ hiện chữ "API key required".
-//   - tile.openstreetmap.org hạn chế trang web bên ngoài dùng trực tiếp, hay bị chặn (bản đồ xám trơn).
-// Nếu lớp đang dùng không tải được tile nào, bản đồ tự chuyển sang lớp kế tiếp trong FALLBACK_ORDER.
+// Lớp nền mặc định: CARTO Positron (cần API key, miễn phí 5 triệu tile/tháng).
+// Key này bị giới hạn theo website (khanhdoan4106.github.io, localhost, 127.0.0.1)
+// nên để công khai trong mã nguồn vẫn an toàn: trang khác dùng sẽ bị từ chối.
+// Đổi / xin key mới: https://carto.com/basemaps/apikey/
 //
-// Có key CARTO miễn phí (https://carto.com/basemaps/apikey/) thì điền vào CARTO_KEY để có thêm 2 lớp CARTO.
+// Dự phòng: nếu lớp đang dùng không tải được tile nào (key sai, bị chặn, mất mạng...),
+// bản đồ tự chuyển sang lớp kế tiếp trong FALLBACK_ORDER (Esri không cần key).
 
-const CARTO_KEY = '';
+const CARTO_KEY = 'cb1_4uum_1_dbc52731385a48b6635691a2';
 
 const HK_MAX_BOUNDS = [[22.15, 113.82], [22.58, 114.44]];
 const BOUNDARY_URL = './assets/data/hongkong.geojson';
@@ -16,9 +16,17 @@ const BOUNDARY_URL = './assets/data/hongkong.geojson';
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 const ESRI_ATTRIBUTION = 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors';
 const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+const CARTO_ATTRIBUTION = `${OSM_ATTRIBUTION}, &copy; <a href="https://carto.com/attributions">CARTO</a>`;
 
-function esriCanvas(name, maxNativeZoom = 16) {
-  return L.tileLayer(`${ESRI}/Canvas/${name}/MapServer/tile/{z}/{y}/{x}`, {
+function cartoLayer(style) {
+  return L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/${style}/{z}/{x}/{y}.png?key=${CARTO_KEY}`, {
+    maxZoom: 19,
+    attribution: CARTO_ATTRIBUTION
+  });
+}
+
+function esriLayer(path, maxNativeZoom = 19) {
+  return L.tileLayer(`${ESRI}/${path}/MapServer/tile/{z}/{y}/{x}`, {
     maxZoom: 19,
     maxNativeZoom,
     attribution: ESRI_ATTRIBUTION
@@ -34,13 +42,16 @@ export function createMap(elementId = 'map') {
     maxZoom: 18
   }).setView([22.34, 114.15], 11);
 
-  const baseMaps = {
-    'Bản đồ Sáng': esriCanvas('World_Light_Gray_Base'),
-    'Bản đồ Tối': esriCanvas('World_Dark_Gray_Base'),
-    'Đường phố (Esri)': L.tileLayer(`${ESRI}/World_Street_Map/MapServer/tile/{z}/{y}/{x}`, {
-      maxZoom: 19,
-      attribution: ESRI_ATTRIBUTION
-    }),
+  const baseMaps = {};
+  if (CARTO_KEY) {
+    baseMaps['Bản đồ Sáng'] = cartoLayer('light_all');
+    baseMaps['Bản đồ Tối'] = cartoLayer('dark_all');
+    baseMaps['Voyager'] = cartoLayer('voyager');
+  }
+  Object.assign(baseMaps, {
+    'Xám nhạt (Esri)': esriLayer('Canvas/World_Light_Gray_Base', 16),
+    'Xám đậm (Esri)': esriLayer('Canvas/World_Dark_Gray_Base', 16),
+    'Đường phố (Esri)': esriLayer('World_Street_Map'),
     'Vệ tinh (Esri)': L.tileLayer(`${ESRI}/World_Imagery/MapServer/tile/{z}/{y}/{x}`, {
       maxZoom: 19,
       attribution: 'Tiles &copy; Esri'
@@ -49,18 +60,10 @@ export function createMap(elementId = 'map') {
       maxZoom: 19,
       attribution: OSM_ATTRIBUTION
     })
-  };
+  });
 
-  if (CARTO_KEY) {
-    const carto = style => L.tileLayer(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`, {
-      maxZoom: 19,
-      attribution: `${OSM_ATTRIBUTION}, &copy; <a href="https://carto.com/attributions">CARTO</a>`
-    });
-    baseMaps['CARTO Positron'] = carto('light_all');
-    baseMaps['CARTO Dark Matter'] = carto('dark_all');
-  }
-
-  const FALLBACK_ORDER = ['Bản đồ Sáng', 'Đường phố (Esri)', 'OpenStreetMap', 'Vệ tinh (Esri)'];
+  const FALLBACK_ORDER = ['Bản đồ Sáng', 'Xám nhạt (Esri)', 'Đường phố (Esri)', 'OpenStreetMap', 'Vệ tinh (Esri)']
+    .filter(name => baseMaps[name]);
   watchTileFailures(map, baseMaps, FALLBACK_ORDER);
 
   baseMaps[FALLBACK_ORDER[0]].addTo(map);
@@ -87,7 +90,7 @@ function watchTileFailures(map, baseMaps, order) {
       if (loaded > 0 || errors < 4 || !map.hasLayer(layer)) return;
 
       tried.add(name);
-      const next = order.find(candidate => !tried.has(candidate) && baseMaps[candidate]);
+      const next = order.find(candidate => !tried.has(candidate));
       if (!next) return;
 
       console.warn(`Lớp nền "${name}" không tải được, chuyển sang "${next}".`);

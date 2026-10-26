@@ -246,7 +246,7 @@ Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đâ
 - JavaScript thuần (ES modules): dữ liệu đồ thị, trạng thái tương tác, A*, route rendering, gợi ý du lịch, đăng nhập và phân quyền.
 - Web Crypto API (SHA-256): băm mật khẩu khi đăng nhập.
 - Leaflet 1.9.4: thư viện bản đồ tương tác (ghim phiên bản để tránh vỡ khi Leaflet ra bản lớn mới).
-- Bản đồ nền: Esri Light/Dark Gray Canvas (miễn phí, không cần API key), kèm lớp Đường phố, Vệ tinh và OpenStreetMap. Nếu lớp đang dùng không tải được tile, bản đồ tự chuyển sang lớp khác. Lớp CARTO chỉ bật khi điền key vào `CARTO_KEY` trong `js/map/map-setup.js`.
+- Bản đồ nền: CARTO Positron / Dark Matter / Voyager (API key miễn phí, giới hạn theo website, khai báo ở `CARTO_KEY` trong `js/map/map-setup.js`), kèm các lớp Esri và OpenStreetMap không cần key. Nếu lớp đang dùng không tải được tile, bản đồ tự chuyển sang lớp Esri.
 - Google Fonts: `Outfit` và `JetBrains Mono`.
 
 Dự án không dùng framework frontend hay bundler và không có thư viện phụ thuộc phải cài; `package.json` chỉ chứa lệnh chạy server tĩnh. Toàn bộ ứng dụng chạy từ các file tĩnh.
