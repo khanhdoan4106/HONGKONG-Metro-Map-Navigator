@@ -16,6 +16,7 @@ import { initGuide, resetGuideTips, setGuideTip, showRouteTips } from './ui/guid
 import { renderRouteResult } from './ui/route-panel.js';
 
 const session = requireAuth();
+if (!session) window.__appReady = true; // đang chuyển về trang đăng nhập
 if (session) startApp(session);
 
 function startApp(session) {
@@ -315,6 +316,7 @@ function startApp(session) {
   renderBlockedPanel({ keys: blockedStore.keys(), meta: key => blockedStore.meta(key), canEdit: admin });
   network.redraw();
   document.body.classList.remove('auth-pending');
+  window.__appReady = true;
 
   setStatus('Đang tải dữ liệu biên giới Hong Kong...');
   loadHKBoundary().then(boundary => {

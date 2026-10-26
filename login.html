@@ -107,21 +107,18 @@
         <button id="login-submit" class="submit" type="submit">Đăng nhập</button>
       </form>
 
-      <div class="or"><span>hoặc</span></div>
+      <div class="or" role="separator"><span>hoặc</span></div>
 
-      <button id="guest-btn" class="guest" type="button">
-        <span class="guest-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 3.9-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>
-        </span>
-        <span class="guest-text">
-          <strong>Vào với tư cách khách</strong>
-          <small>Xem bản đồ và tìm đường, không cần tài khoản</small>
-        </span>
+      <button id="guest-btn" class="guest-btn" type="button" aria-describedby="guest-note">
+        <svg class="guest-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 3.9-5.4 7-5.4s5.8 1.8 7 5.4"/></svg>
+        <span>Tiếp tục với tư cách khách</span>
+        <svg class="guest-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
+      <p class="guest-note" id="guest-note">Không cần tài khoản. Khách xem bản đồ và tìm đường, không chặn được tuyến.</p>
 
       <div class="roles">
         <div class="role"><span class="role-dot admin"></span><p><strong>Quản trị viên</strong> chặn và mở lại đoạn metro khi có sự cố.</p></div>
-        <div class="role"><span class="role-dot user"></span><p><strong>Người dùng</strong> và <strong>khách</strong> tìm đường, tự đi vòng qua các đoạn đang tạm dừng.</p></div>
+        <div class="role"><span class="role-dot user"></span><p><strong>Người dùng</strong> tìm đường, tự đi vòng qua các đoạn đang tạm dừng.</p></div>
       </div>
     </section>
 
@@ -133,22 +130,10 @@
   Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>
   Hãy chạy qua web server, ví dụ <code>npx serve .</code> hoặc Live Server của VS Code.
 </div>
-<div id="load-error" class="load-error" role="alert" hidden>
-  Trang vừa được cập nhật nhưng trình duyệt còn giữ bản cũ.
-  <button type="button" onclick="location.reload()">Tải lại trang</button>
-  <span>Nếu vẫn lỗi, nhấn Ctrl + F5 hoặc mở bằng cửa sổ ẩn danh.</span>
-</div>
 <script>
   if (location.protocol === 'file:') document.getElementById('file-protocol-warning').hidden = false;
-  // login.js đặt window.__loginReady = true khi chạy xong; nếu không (lỗi tải / file cũ) thì báo
-  window.addEventListener('load', function () {
-    setTimeout(function () {
-      if (!window.__loginReady && location.protocol !== 'file:') {
-        document.getElementById('load-error').hidden = false;
-      }
-    }, 1500);
-  });
 </script>
+<script src="js/stale-guard.js" data-ready-flag="__loginReady"></script>
 <script type="module" src="js/login.js"></script>
 </body>
 </html>
