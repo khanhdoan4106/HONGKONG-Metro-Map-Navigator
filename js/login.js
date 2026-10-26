@@ -3,6 +3,7 @@
 import { login, getSession, APP_PAGE } from './auth/auth.js';
 import { getSignStops } from './core/sign-stops.js';
 import { createStationScene, webglAvailable } from './ui/station-scene.js';
+import { createRouteMapCard } from './ui/route-map-card.js';
 
 if (getSession()) location.replace(APP_PAGE);
 
@@ -27,8 +28,17 @@ const PHASE_TEXT = {
 const hud = $('hud');
 ['hud-zh', 'hud-en', 'hud-code', 'hud-line', 'hud-dir', 'hud-next', 'hud-min'].forEach(id => $(id).classList.add('swap'));
 
+const routeCard = createRouteMapCard($('route-card'));
+let stopCount = 0;
+
+let lastStopId = null;
+
 let firstStop = true;
 function showStop(stop) {
+  if (stop.id !== lastStopId) {
+    lastStopId = stop.id;
+    routeCard.showRoute(stop.id, stopCount++);
+  }
   const fill = () => {
     document.documentElement.style.setProperty('--line', stop.color);
     $('hud-zh').textContent = stop.zh;

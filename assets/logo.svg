@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="MTR Navigator">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e8bff"/>
+      <stop offset="1" stop-color="#00b8c8"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.28"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- nền bo góc -->
+  <rect width="48" height="48" rx="13" fill="url(#bg)"/>
+  <rect width="48" height="48" rx="13" fill="url(#shine)"/>
+  <!-- chữ N vẽ như một tuyến metro: đi lên, chéo xuống, đi lên -->
+  <path d="M14 34V14l20 20V14" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ga đầu và ga cuối -->
+  <circle cx="14" cy="34" r="4.6" fill="#fff"/>
+  <circle cx="14" cy="34" r="2" fill="#1e8bff"/>
+  <circle cx="34" cy="14" r="4.6" fill="#fff"/>
+  <circle cx="34" cy="14" r="2" fill="#00b8c8"/>
+</svg>

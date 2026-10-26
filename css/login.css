@@ -97,25 +97,14 @@ body {
   letter-spacing: 0.02em;
 }
 
-.brand-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid var(--stroke);
-  box-shadow: 0 0 24px rgba(95,212,255,0.25);
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(30,139,255,0.45), 0 0 0 1px rgba(255,255,255,0.12);
 }
-.brand-mark svg {
-  width: 19px;
-  height: 19px;
-  fill: none;
-  stroke: var(--cyan);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+
+.brand-name span { font-weight: 500; color: #a9c4dc; }
 
 .clock {
   display: flex;
@@ -145,9 +134,123 @@ body {
   padding-right: max(56px, env(safe-area-inset-right, 0px));
 }
 
+/* Cột trái: thẻ bản đồ ở trên, bảng thông tin chuyến tàu ở dưới */
+.left {
+  align-self: stretch;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* ================= Thẻ bản đồ tuyến ================= */
+.route-card {
+  width: 360px;
+  max-width: 100%;
+  padding: 16px 16px 14px;
+  border-radius: 18px;
+  background: rgba(8,13,22,0.66);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+  animation: panelIn 0.8s cubic-bezier(.2,.8,.2,1) both 0.35s;
+}
+
+.rc-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rc-kicker {
+  font-family: var(--tech);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--cyan);
+}
+.rc-title {
+  font-family: var(--tech);
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rc-meta {
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rc-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 360 / 250;
+  margin-top: 8px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 60% 55%, rgba(30,139,255,0.12), transparent 65%),
+    rgba(255,255,255,0.02);
+}
+
+.rm-line {
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+  transition: opacity 0.5s ease;
+}
+.rc-map.has-route .rm-line { opacity: 0.42; }
+
+.rm-interchange { fill: #0b121c; stroke: #dbe9f5; stroke-width: 1.2; }
+
+.rm-leg {
+  stroke-width: 4.8;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+.rm-walk { stroke-width: 2; stroke-dasharray: 2 3; }
+
+.rm-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.75);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  animation: trackFlow 1.2s linear infinite;
+}
+@keyframes trackFlow { to { stroke-dashoffset: -16; } }
+
+.rm-start, .rm-end { stroke: #fff; stroke-width: 2; }
+.rm-start { fill: #36c95a; }
+.rm-end { fill: #ff5a6a; }
+
+.rm-train-body { fill: #f2f7fb; stroke: var(--line); stroke-width: 1.4; filter: drop-shadow(0 0 5px rgba(160,220,255,0.8)); }
+.rm-train-window { fill: #0b1724; }
+.rm-train-lamp { fill: #fff6c8; }
+
+.rc-legs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.rm-chip {
+  font-family: var(--tech);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--c);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 55%, transparent);
+}
+
 /* ================= Bảng thông tin chuyến tàu ================= */
 .hud {
-  align-self: end;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -464,6 +567,17 @@ body {
     padding-right: max(32px, env(safe-area-inset-right, 0px));
   }
   .hud-next { display: none; }
+  .route-card { width: 320px; }
+}
+
+/* Màn hình thấp: rút gọn để thẻ bản đồ và bảng thông tin không chồng lên nhau */
+@media (max-height: 820px) and (min-width: 821px) {
+  .hud-next { display: none; }
+  .hud-zh { font-size: 56px; }
+  .hud-en { font-size: 26px; }
+}
+@media (max-height: 660px) and (min-width: 821px) {
+  .route-card { display: none; }
 }
 
 /* ================= Điện thoại / máy tính bảng dọc ================= */
@@ -486,8 +600,7 @@ body {
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
-  .hud { gap: 8px; }
-  .hud { display: none; }
+  .hud, .route-card { display: none; }
   .panel { padding: 28px 22px 24px; border-radius: 20px; }
   .panel h1 { font-size: 26px; }
   .scene-shade {
@@ -496,6 +609,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel, .pulse, .spinner { animation: none; }
+  .panel, .pulse, .spinner, .route-card, .rm-track { animation: none; }
   .scene, .hud .swap { transition: none; }
 }

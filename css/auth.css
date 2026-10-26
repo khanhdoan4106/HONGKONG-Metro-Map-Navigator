@@ -145,3 +145,11 @@ body.auth-pending { visibility: hidden; }
   border-radius: 5px;
   padding: 1px 6px;
 }
+
+/* Logo ảnh trong panel bản đồ */
+.logo.logo-img {
+  background: none;
+  padding: 0;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(30,139,255,0.3);
+}
