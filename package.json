@@ -1,0 +1,10 @@
+{
+  "name": "hongkong-metro-map-navigator",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Mô phỏng tìm đường A* trên mạng MTR Hong Kong, có đăng nhập phân quyền admin/user",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve -l 5500 ."
+  }
+}

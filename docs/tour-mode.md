@@ -1,5 +1,7 @@
 # README1 - Nâng cấp Tour Mode cho MTR Navigator
 
+> Ghi chú lịch sử của đợt nâng cấp Tour Mode, viết khi dự án còn dùng một file `app.js` / `style.css`. Từ bản 2.0 code tương ứng nằm ở `js/data/route-modes.js`, `js/core/pathfinding.js` và `js/ui/route-panel.js`.
+
 File này ghi lại chi tiết đợt nâng cấp mới nhất của project sau khi đã có bản đồ MTR Hong Kong, dữ liệu 97 ga, thời gian di chuyển theo tốc độ từng tuyến và gợi ý địa điểm dọc hành trình.
 
 ## 1. Mục tiêu nâng cấp

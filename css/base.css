@@ -1,0 +1,28 @@
+/* Reset, biến màu và nền trang */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #e9eef3;
+  --panel:   rgba(255,255,255,0.96);
+  --panel2:  #ffffff;
+  --panel3:  #eef3f7;
+  --border:  #d6dde5;
+  --accent:  #006fbd;
+  --green:   #198754;
+  --danger:  #d64545;
+  --warn:    #b7791f;
+  --text:    #17202a;
+  --muted:   #66758a;
+  --font:    'Outfit', sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+  --r:       12px;
+  --shadow:  0 18px 48px rgba(16,24,40,0.22), 0 3px 12px rgba(16,24,40,0.12);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+}

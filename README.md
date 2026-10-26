@@ -13,6 +13,7 @@ Ngoài phần tìm đường, ứng dụng còn có lớp trải nghiệm du l�
 - [Công Nghệ Sử Dụng](#công-nghệ-sử-dụng)
 - [Cấu Trúc Thư Mục](#cấu-trúc-thư-mục)
 - [Cách Chạy Dự Án](#cách-chạy-dự-án)
+- [Đăng Nhập Và Phân Quyền](#đăng-nhập-và-phân-quyền)
 - [Hướng Dẫn Sử Dụng](#hướng-dẫn-sử-dụng)
 - [Mô Hình Dữ Liệu](#mô-hình-dữ-liệu)
 - [Thuật Toán A*](#thuật-toán-a)
@@ -41,7 +42,7 @@ Dự án này mô phỏng bài toán đó trên mạng MTR Hong Kong. Về mặt
 - Vẽ 97 ga MTR bằng marker tùy chỉnh.
 - Đánh dấu ga trung chuyển bằng marker nổi bật hơn.
 - Vẽ 104 đoạn metro và các liên kết trung chuyển đi bộ.
-- Cho phép click vào đoạn metro để bật/tắt trạng thái bị cấm.
+- Quản trị viên click vào đoạn metro để bật/tắt trạng thái bị cấm.
 - Hiển thị danh sách các đoạn bị cấm trong panel điều khiển.
 - Cho phép bỏ cấm từng đoạn ngay trong panel.
 - Chọn điểm bắt đầu và điểm kết thúc trực tiếp trên bản đồ.
@@ -53,6 +54,7 @@ Dự án này mô phỏng bài toán đó trên mạng MTR Hong Kong. Về mặt
 - Có legend màu tuyến, khung trang trí bản đồ và panel giao diện dạng dashboard.
 - Có nút đặt lại trạng thái bản đồ.
 - Có nút phóng to/thu nhỏ panel điều khiển.
+- Đăng nhập với 2 vai trò: chỉ quản trị viên được chặn đoạn metro, người dùng xem và tìm đường tránh các đoạn đang tạm dừng.
 
 ## Phạm Vi Mô Phỏng
 
@@ -78,7 +80,7 @@ Mạng có cả tuyến trung tâm đông ga, tuyến sân bay, tuyến nhánh n
 
 ## Danh Sách Ga
 
-Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đây là chỉ số nội bộ theo thứ tự mảng `stations` trong `app.js`; cột "Các ga kề" cũng dùng các ID này để biểu diễn quan hệ kề trong đồ thị. Quan hệ kề bao gồm cả đoạn metro và liên kết trung chuyển đi bộ.
+Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đây là chỉ số nội bộ theo thứ tự mảng `stations` trong `js/data/stations.js`; cột "Các ga kề" cũng dùng các ID này để biểu diễn quan hệ kề trong đồ thị. Quan hệ kề bao gồm cả đoạn metro và liên kết trung chuyển đi bộ.
 
 ### Nhóm ID 0-24
 
@@ -241,61 +243,97 @@ Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đâ
 
 - HTML5: cấu trúc trang, panel, mascot và các lớp giao diện.
 - CSS3: layout, màu sắc, responsive, animation mascot, khung trang trí và card gợi ý.
-- JavaScript thuần: dữ liệu đồ thị, trạng thái tương tác, A*, route rendering và gợi ý du lịch.
-- Leaflet: thư viện bản đồ tương tác.
+- JavaScript thuần (ES modules): dữ liệu đồ thị, trạng thái tương tác, A*, route rendering, gợi ý du lịch, đăng nhập và phân quyền.
+- Web Crypto API (SHA-256): băm mật khẩu khi đăng nhập.
+- Leaflet 1.9.4: thư viện bản đồ tương tác (ghim phiên bản để tránh vỡ khi Leaflet ra bản lớn mới).
 - OpenStreetMap: tile bản đồ nền.
 - Google Fonts: `Outfit` và `JetBrains Mono`.
 
-Dự án không dùng framework frontend, bundler hoặc package manager. Toàn bộ ứng dụng chạy từ các file tĩnh.
+Dự án không dùng framework frontend hay bundler và không có thư viện phụ thuộc phải cài; `package.json` chỉ chứa lệnh chạy server tĩnh. Toàn bộ ứng dụng chạy từ các file tĩnh.
 
 ## Cấu Trúc Thư Mục
 
 ```text
-mtrmap-test/
-├── README.md
-├── app.js
-├── index.html
-└── style.css
+HONGKONG-Metro-Map-Navigator/
+├── index.html                 # Trang bản đồ (yêu cầu đăng nhập)
+├── login.html                 # Trang đăng nhập
+├── package.json               # Lệnh chạy server tĩnh (npm start)
+├── assets/
+│   └── data/hongkong.geojson  # Ranh giới lãnh thổ Hong Kong
+├── css/
+│   ├── base.css               # Reset, biến màu, font
+│   ├── map.css                # Bản đồ, khung, legend, marker ga, lớp tuyến
+│   ├── guide.css              # Hai mascot và animation
+│   ├── panel.css              # Panel điều khiển, kết quả tuyến
+│   ├── auth.css               # Trang đăng nhập, thanh tài khoản, UI theo vai trò
+│   └── responsive.css         # Media query (load cuối)
+├── js/
+│   ├── main.js                # Điểm vào trang bản đồ: nối các module, xử lý luồng thao tác
+│   ├── login.js               # Điểm vào trang đăng nhập
+│   ├── auth/
+│   │   ├── accounts.js        # 2 tài khoản cố định + vai trò
+│   │   └── auth.js            # login / logout / phiên / kiểm tra quyền
+│   ├── data/                  # Dữ liệu tĩnh: ga, tuyến, chế độ tìm đường, gợi ý, lời thoại mascot
+│   ├── core/                  # Logic thuần, không phụ thuộc DOM
+│   │   ├── geo.js             # Haversine, kiểm tra điểm trong ranh giới
+│   │   ├── graph.js           # Sinh cạnh, danh sách kề, ga gần nhất
+│   │   ├── pathfinding.js     # A* và so sánh phương án tuyến
+│   │   ├── suggestions.js     # Gợi ý dừng chân, điểm thưởng du lịch
+│   │   └── utils.js
+│   ├── state/
+│   │   └── blocked-store.js   # Kho đoạn bị chặn (chỉ admin sửa, lưu localStorage)
+│   ├── map/                   # Leaflet: khởi tạo bản đồ, vẽ mạng lưới, vẽ tuyến
+│   └── ui/                    # Panel, mascot, HTML kết quả tuyến
+└── docs/
+    ├── CHANGELOG.md
+    └── tour-mode.md           # Ghi chú đợt nâng cấp Tour Mode
 ```
 
 ## Cách Chạy Dự Án
 
-### Cách 1: Mở trực tiếp file HTML
-
-Mở file `index.html` bằng trình duyệt:
-
-```text
-mtrmap-test/index.html
-```
-
-Cách này chạy được vì dự án là web tĩnh. Tuy nhiên, trình duyệt cần Internet để tải Leaflet, Google Fonts và tile OpenStreetMap.
-
-### Cách 2: Chạy local static server
-
-Trong thư mục `mtrmap-test`, chạy:
+Ứng dụng dùng ES modules nên **phải chạy qua web server** (mở trực tiếp `file://` sẽ hiện thông báo hướng dẫn). Chọn một trong các cách:
 
 ```bash
-python -m http.server 8000
+npm start                      # cần Node.js, chạy tại http://localhost:5500
+python -m http.server 8000     # hoặc dùng Python, mở http://localhost:8000
 ```
 
-Sau đó mở:
+Hoặc dùng extension **Live Server** của VS Code. Trình duyệt cần Internet để tải Leaflet, Google Fonts và tile bản đồ. Deploy GitHub Pages vẫn chạy bình thường.
 
-```text
-http://localhost:8000
-```
+## Đăng Nhập Và Phân Quyền
+
+| Tài khoản | Mật khẩu | Vai trò | Quyền |
+| --- | --- | --- | --- |
+| `admin` | `admin123` | Quản trị viên | Chặn / bỏ chặn đoạn metro, gỡ tất cả, tìm đường |
+| `user` | `user123` | Người dùng | Xem các đoạn đang tạm dừng, tìm đường (A* tự tránh các đoạn đó) |
+
+- Chưa đăng nhập mà vào `index.html` sẽ bị chuyển về `login.html`.
+- Tick "Ghi nhớ đăng nhập" để giữ phiên sau khi đóng trình duyệt (tối đa 12 giờ); không tick thì phiên mất khi đóng tab.
+- Đoạn do admin chặn được lưu trong `localStorage`, nên tài khoản user đăng nhập trên **cùng trình duyệt** sẽ thấy và được tự động đi vòng. Nút ↺ không xóa các đoạn đã chặn; admin dùng "Bỏ cấm" hoặc "Gỡ tất cả".
+- Mở hai tab (một admin, một user) thì thay đổi của admin được đồng bộ sang tab user ngay lập tức.
+- Đổi mật khẩu: xem hướng dẫn trong `js/auth/accounts.js` (mật khẩu lưu dạng SHA-256, không lưu chữ rõ).
 
 ## Hướng Dẫn Sử Dụng
 
-1. Mở ứng dụng trong trình duyệt.
-2. Click vào một hoặc nhiều đoạn nối giữa các ga để đánh dấu là bị cấm.
-3. Xem danh sách "Đoạn bị cấm" trong panel bên phải.
-4. Nếu muốn bỏ cấm, nhấn "Bỏ cấm" ở dòng tương ứng.
-5. Nhấn "Xác nhận" để chuyển sang bước chọn điểm bắt đầu.
-6. Click lên bản đồ để chọn điểm bắt đầu. Ứng dụng tự gán vị trí click với ga MTR gần nhất.
-7. Click lần nữa để chọn điểm kết thúc.
-8. Xem tuyến đường, thời gian ước tính, số ga, số đoạn metro và gợi ý dừng chân.
-9. Bấm vào mascot để đổi nội dung gợi ý trong bong bóng thoại.
-10. Nhấn nút đặt lại để xóa trạng thái hiện tại và thử kịch bản mới.
+**Quản trị viên**
+
+1. Đăng nhập bằng tài khoản admin.
+2. Click vào một hoặc nhiều đoạn nối giữa các ga để chặn (click lần nữa để bỏ chặn).
+3. Xem danh sách "Đoạn bị cấm" kèm thời điểm chặn; nhấn "Bỏ cấm" hoặc "Gỡ tất cả" khi cần.
+4. Nhấn "Xác nhận" để chuyển sang bước chọn điểm và kiểm tra tuyến thay thế.
+
+**Người dùng**
+
+1. Đăng nhập bằng tài khoản user, ứng dụng vào thẳng bước chọn điểm bắt đầu.
+2. Các đoạn đang tạm dừng hiển thị nét đứt màu đỏ và trong danh sách "Đoạn tạm dừng" (chỉ xem).
+
+**Chung cho cả hai vai trò**
+
+1. Click lên bản đồ để chọn điểm bắt đầu, ứng dụng tự gán với ga MTR gần nhất; click lần nữa để chọn điểm kết thúc.
+2. Xem tuyến đường, thời gian ước tính, số ga, số đoạn metro và gợi ý dừng chân; đổi chế độ du lịch để so sánh phương án.
+3. Sau khi có tuyến, click lên bản đồ để chọn lại điểm đi mới.
+4. Bấm vào mascot để đổi nội dung gợi ý trong bong bóng thoại.
+5. Nhấn ↺ để xóa tuyến hiện tại; nút đăng xuất nằm ở thanh tài khoản trong panel.
 
 Các nút `+` và `-` trong panel dùng để phóng to hoặc thu nhỏ panel điều khiển, không phải zoom bản đồ.
 
@@ -303,7 +341,7 @@ Các nút `+` và `-` trong panel dùng để phóng to hoặc thu nhỏ panel �
 
 ### Ga
 
-Các ga được khai báo trong mảng `stations` trong `app.js`. Mỗi ga có:
+Các ga được khai báo trong mảng `stations` trong `js/data/stations.js`. Mỗi ga có:
 
 - `id`: mã ga MTR dạng chuỗi;
 - `name`: tên hiển thị;
@@ -494,47 +532,16 @@ Mascot được dựng bằng SVG và CSS animation, không phụ thuộc ảnh 
 
 ## Các File Chính
 
-### `index.html`
-
-Định nghĩa cấu trúc trang:
-
-- `#map`: vùng bản đồ;
-- `.map-frame`: khung trang trí quanh map;
-- `#line-legend`: legend tuyến;
-- `#tour-guide`: mascot tóc trắng và bong bóng thoại chính;
-- `#tour-guide-right`: mascot tóc tím và bong bóng thoại phụ;
-- `#panel`: panel điều khiển;
-- các vùng trạng thái, danh sách đoạn bị cấm, route result và nút thao tác;
-- liên kết tới Leaflet, Google Fonts, `style.css` và `app.js`.
-
-### `style.css`
-
-Chứa toàn bộ giao diện:
-
-- reset CSS;
-- biến màu/font trong `:root`;
-- layout map và panel;
-- khung trang trí bản đồ;
-- legend tuyến;
-- marker ga và tooltip Leaflet;
-- route flow, summary và card gợi ý;
-- mascot SVG và animation;
-- responsive cho màn hình nhỏ.
-
-### `app.js`
-
-Chứa logic ứng dụng:
-
-- khởi tạo bản đồ Leaflet;
-- khai báo dữ liệu tuyến/ga/cạnh/gợi ý;
-- tính Haversine;
-- sinh edge và adjacency graph;
-- tìm ga gần nhất từ vị trí click;
-- triển khai A* có trọng số và trạng thái tuyến;
-- xử lý chặn/bỏ chặn cạnh;
-- render marker, cạnh, route và gợi ý dừng chân;
-- điều khiển mascot tip;
-- reset trạng thái và zoom panel.
+| File | Vai trò |
+| --- | --- |
+| `js/main.js` | Kiểm tra đăng nhập, khởi tạo bản đồ, quản lý trạng thái (`block → start → end → done`) và gắn sự kiện. |
+| `js/auth/auth.js` | `login`, `logout`, `getSession`, `isAdmin`, `requireAuth`. Phiên chỉ hợp lệ khi khớp một tài khoản có thật trong `accounts.js`. |
+| `js/state/blocked-store.js` | Kho đoạn bị chặn; mọi thao tác sửa đều kiểm tra quyền admin trước, kể cả khi gọi từ console. |
+| `js/core/pathfinding.js` | `findPath(src, dst, { modeKey, blockedEdges })` và `buildRouteOptions(...)`; nhận tập đoạn bị chặn qua tham số nên test được độc lập. |
+| `js/core/graph.js` | Sinh cạnh từ `lineSequences`, danh sách kề, ga gần nhất. |
+| `js/map/network-layer.js` | Vẽ ga và cạnh; chỉ gắn sự kiện click chặn đoạn khi người dùng là admin ở bước chặn. |
+| `js/ui/route-panel.js` | Sinh HTML phương án tuyến, lộ trình, timeline và gợi ý dừng chân. |
+| `js/ui/guide.js` | Lời thoại và biểu cảm mascot, nội dung khác nhau theo vai trò. |
 
 ## Nguồn Dữ Liệu
 
@@ -551,13 +558,12 @@ Chứa logic ứng dụng:
 - Chưa gọi API next-train realtime của MTR để cộng thời gian chờ tàu thực tế.
 - Gợi ý du lịch/ẩm thực là dữ liệu mẫu, chưa kiểm tra giờ mở cửa hoặc tình trạng vận hành theo thời gian thực.
 - Chưa có kiểm thử tự động.
-- Chưa lưu trạng thái sau khi tải lại trang.
 - Ứng dụng phụ thuộc vào CDN cho Leaflet, Google Fonts và tile bản đồ.
-- Dữ liệu tuyến, ga và gợi ý hiện vẫn nhúng trực tiếp trong `app.js`.
+- Đăng nhập chỉ chạy phía trình duyệt, không có server: phù hợp cho demo/học tập, người có kỹ thuật vẫn có thể sửa storage để giả quyền admin. Muốn bảo mật thật cần backend kiểm tra quyền.
+- Đoạn bị chặn lưu trong `localStorage` nên chỉ dùng chung giữa các tài khoản trên cùng một trình duyệt.
 
 ## Hướng Phát Triển
 
-- Tách dữ liệu ga, tuyến, cạnh và gợi ý sang file JSON riêng.
 - Bổ sung Light Rail, High Speed Rail hoặc các tuyến tương lai.
 - Cho phép chặn cả ga, không chỉ chặn đoạn nối.
 - Kết nối API realtime của MTR để tính thêm thời gian chờ tàu.

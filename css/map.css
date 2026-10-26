@@ -1,0 +1,166 @@
+/* Bản đồ, khung trang trí, legend, marker ga, lớp tuyến */
+#map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: brightness(0.97) saturate(0.88);
+}
+
+.map-frame {
+  position:absolute;
+  inset:12px;
+  z-index:850;
+  pointer-events:none;
+  border:1px solid rgba(255,255,255,0.62);
+  box-shadow: inset 0 0 0 1px rgba(0,111,189,0.16), inset 0 0 38px rgba(0,111,189,0.08);
+}
+
+.map-frame::before,
+.map-frame::after {
+  content:'';
+  position:absolute;
+  left:24px;
+  right:24px;
+  height:3px;
+  background: repeating-linear-gradient(
+    90deg,
+    #e2231a 0 42px,
+    #007dc5 42px 84px,
+    #00a040 84px 126px,
+    #f7941d 126px 168px,
+    #9a3b26 168px 210px,
+    #6cc4e8 210px 252px
+  );
+  opacity:0.86;
+}
+
+.map-frame::before { top:-2px; }
+.map-frame::after { bottom:-2px; }
+
+.corner {
+  position:absolute;
+  width:34px;
+  height:34px;
+  border-color:rgba(0,111,189,0.78);
+  border-style:solid;
+}
+.corner.top-left { top:-1px; left:-1px; border-width:3px 0 0 3px; }
+.corner.top-right { top:-1px; right:-1px; border-width:3px 3px 0 0; }
+.corner.bottom-left { bottom:-1px; left:-1px; border-width:0 0 3px 3px; }
+.corner.bottom-right { bottom:-1px; right:-1px; border-width:0 3px 3px 0; }
+
+#line-legend {
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  z-index: 920;
+  width: max-content; 
+  background: rgba(255, 255, 255, 0.93);
+  border: 1px solid rgba(214, 221, 229, 0.92);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.16);
+  backdrop-filter: blur(12px);
+  padding: 10px 12px; 
+}
+
+.legend-title {
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05); 
+  padding-bottom: 4px;
+}
+
+.legend-grid {
+  display: flex;
+  flex-direction: column; 
+  gap: 8px;
+}
+
+.legend-grid span {
+  display: flex;
+  align-items: center;
+  gap: 6px; 
+  color: var(--muted);
+  font-family: var(--font); 
+  font-size: 11.5px; 
+}
+
+.legend-grid i {
+  width: 14px;
+  height: 6px; 
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--line);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+  flex-shrink: 0; 
+}
+
+.leaflet-tooltip {
+  background:var(--panel2) !important;
+  border:1px solid var(--border) !important;
+  color:var(--text) !important;
+  font-family:var(--mono) !important;
+  font-size:11.5px !important;
+  border-radius:7px !important;
+  padding:5px 10px !important;
+  box-shadow:0 6px 16px rgba(16,24,40,0.18) !important;
+}
+.leaflet-tooltip-top::before { border-top-color:var(--border) !important; }
+
+.station-dot {
+  width:9px;
+  height:9px;
+  background:#dbe9f7;
+  border:2px solid #ffffff;
+  border-radius:50%;
+  box-shadow:0 0 7px rgba(77,156,255,0.75);
+}
+
+.station-dot.interchange {
+  width:12px;
+  height:12px;
+  background:#fff;
+  border:3px solid #f0a500;
+  box-shadow:0 0 9px rgba(240,165,0,0.8);
+}
+
+.leaflet-control-layers {
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 28px rgba(16,24,40,0.16) !important;
+  font-family: var(--font) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px);
+  padding: 4px;
+}
+
+.leaflet-control-layers-list label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+#map.has-active-route path.base-edge {
+  opacity: 0.15 !important;
+  filter: grayscale(80%);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+#map.has-active-route .station-dot {
+  opacity: 0.3;
+  box-shadow: none;
+  transition: opacity 0.5s ease;
+}
+
+.active-route-core {
+  animation: routeFlow 0.8s linear infinite forwards;
+}
+
+@keyframes routeFlow {
+  100% { stroke-dashoffset: -27; } 
+}
