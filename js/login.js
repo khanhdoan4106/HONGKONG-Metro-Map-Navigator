@@ -1,9 +1,7 @@
 // Trang đăng nhập.
 
 import { login, getSession, APP_PAGE } from './auth/auth.js';
-import { stations } from './data/stations.js';
-import { lineProfiles } from './data/lines.js';
-import { drawLineBundle, fillLineStrip } from './ui/line-bundle.js';
+import { startStationSign } from './ui/station-sign.js';
 
 if (getSession()) location.replace(APP_PAGE);
 
@@ -15,36 +13,25 @@ const username = $('username');
 const password = $('password');
 const toggle = $('toggle-password');
 const capsHint = $('caps-hint');
-const submitHtml = submit.innerHTML;
 
-// ----- Trang trí -----
-drawLineBundle($('line-bundle'));
-fillLineStrip($('card-strip'));
-const lineCount = Object.keys(lineProfiles).filter(code => code !== 'XFER').length;
-$('network-meta').textContent = `Hong Kong MTR · ${stations.length} ga · ${lineCount} tuyến`;
+startStationSign($('platform'));
 
-// ----- Form -----
 function showError(message, fieldIds = []) {
   errorBox.textContent = message;
   errorBox.hidden = !message;
   ['field-username', 'field-password'].forEach(id => $(id).classList.toggle('invalid', fieldIds.includes(id)));
-  if (message) {
-    errorBox.classList.remove('shake');
-    void errorBox.offsetWidth; // chạy lại animation
-    errorBox.classList.add('shake');
-  }
 }
 
 function setLoading(loading) {
   submit.disabled = loading;
-  submit.innerHTML = loading ? '<span class="spinner"></span><span>Đang đăng nhập</span>' : submitHtml;
+  submit.innerHTML = loading ? '<span class="spinner" aria-hidden="true"></span>Đang đăng nhập' : 'Đăng nhập';
 }
 
 toggle.addEventListener('click', () => {
   const show = password.type === 'password';
   password.type = show ? 'text' : 'password';
+  toggle.textContent = show ? 'Ẩn' : 'Hiện';
   toggle.setAttribute('aria-pressed', String(show));
-  toggle.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
   password.focus();
 });
 
@@ -72,7 +59,7 @@ form.addEventListener('submit', async event => {
     await login(name, password.value, { remember: form.remember.checked });
     location.replace(APP_PAGE);
   } catch (err) {
-    showError(err.message, ['field-username', 'field-password']);
+    showError(`${err.message} Kiểm tra lại rồi thử lần nữa.`, ['field-username', 'field-password']);
     password.value = '';
     password.focus();
     setLoading(false);
