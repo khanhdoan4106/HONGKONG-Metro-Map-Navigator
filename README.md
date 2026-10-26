@@ -246,7 +246,7 @@ Tổng cộng dự án đang sử dụng **97 ga**. ID trong bảng dưới đâ
 - JavaScript thuần (ES modules): dữ liệu đồ thị, trạng thái tương tác, A*, route rendering, gợi ý du lịch, đăng nhập và phân quyền.
 - Web Crypto API (SHA-256): băm mật khẩu khi đăng nhập.
 - Leaflet 1.9.4: thư viện bản đồ tương tác (ghim phiên bản để tránh vỡ khi Leaflet ra bản lớn mới).
-- OpenStreetMap: tile bản đồ nền.
+- OpenStreetMap: tile bản đồ nền (không cần API key). Kiểu "Sáng" và "Tối" là tile OSM lọc màu bằng CSS. Lớp CARTO chỉ bật khi điền key vào `CARTO_KEY` trong `js/map/map-setup.js`, vì CARTO hiện yêu cầu API key.
 - Google Fonts: `Outfit` và `JetBrains Mono`.
 
 Dự án không dùng framework frontend hay bundler và không có thư viện phụ thuộc phải cài; `package.json` chỉ chứa lệnh chạy server tĩnh. Toàn bộ ứng dụng chạy từ các file tĩnh.
