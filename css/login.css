@@ -53,11 +53,14 @@ body {
 }
 
 /* ================= Vùng hình ảnh ================= */
+/* Ảnh nền tĩnh chụp từ chính cảnh 3D: luôn thấy tàu và ga kể cả khi
+   trình duyệt không hỗ trợ / chặn WebGL. Cảnh 3D động phủ lên khi chạy được. */
 .visual {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   background:
+    url("../assets/login-poster.jpg") 42% center / cover no-repeat,
     radial-gradient(ellipse at 40% 45%, rgba(0,125,197,0.28), transparent 60%),
     var(--bg);
 }
