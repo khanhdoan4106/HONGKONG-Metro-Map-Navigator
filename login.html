@@ -80,7 +80,7 @@
       <h1 id="login-title">Đăng nhập</h1>
       <p class="lead">Dùng tài khoản được cấp để mở bản đồ tuyến tàu điện Hong Kong.</p>
 
-      <form id="login-form" class="form" novalidate>
+      <form id="login-form" class="form" novalidate onsubmit="return false">
         <div class="field" id="field-username">
           <label for="username">Tên đăng nhập</label>
           <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
@@ -133,8 +133,21 @@
   Ứng dụng dùng ES modules nên không mở trực tiếp bằng <code>file://</code> được.<br>
   Hãy chạy qua web server, ví dụ <code>npx serve .</code> hoặc Live Server của VS Code.
 </div>
+<div id="load-error" class="load-error" role="alert" hidden>
+  Trang vừa được cập nhật nhưng trình duyệt còn giữ bản cũ.
+  <button type="button" onclick="location.reload()">Tải lại trang</button>
+  <span>Nếu vẫn lỗi, nhấn Ctrl + F5 hoặc mở bằng cửa sổ ẩn danh.</span>
+</div>
 <script>
   if (location.protocol === 'file:') document.getElementById('file-protocol-warning').hidden = false;
+  // login.js đặt window.__loginReady = true khi chạy xong; nếu không (lỗi tải / file cũ) thì báo
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      if (!window.__loginReady && location.protocol !== 'file:') {
+        document.getElementById('load-error').hidden = false;
+      }
+    }, 1500);
+  });
 </script>
 <script type="module" src="js/login.js"></script>
 </body>
